@@ -1,65 +1,73 @@
-import Image from "next/image";
+'use client';
+import { useState } from 'react';
+import SimulatorForm from '@/components/SimulatorForm';
+import ResultsPanel from '@/components/ResultsPanel';
+import RentaVariableSection from '@/components/RentaVariableSection';
+import type { SimulatorFormData, SimulationResult } from '@/types';
 
 export default function Home() {
+  const [result, setResult] = useState<SimulationResult | null>(null);
+  const [formData, setFormData] = useState<SimulatorFormData | null>(null);
+
+  function handleResult(fd: SimulatorFormData, res: SimulationResult) {
+    setFormData(fd);
+    setResult(res);
+    if (window.innerWidth < 1024) {
+      setTimeout(() => {
+        document.getElementById('results')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
+    }
+  }
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+    <>
+      <main className="max-w-5xl mx-auto px-4 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+
+          {/* Form */}
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+            <h2 className="text-xl font-bold text-gray-900 mb-0.5">Define tu objetivo</h2>
+            <p className="text-sm text-gray-400 mb-6">
+              Completa los datos y proyectamos cómo crece tu plata.
+            </p>
+            <SimulatorForm onResult={handleResult} />
+          </div>
+
+          {/* Results */}
+          <div id="results" className="min-h-[200px]">
+            {result && formData ? (
+              <ResultsPanel formData={formData} result={result} />
+            ) : (
+              <div className="bg-gradient-to-br from-teal-50 via-emerald-50 to-teal-100 rounded-2xl p-8 text-center border border-teal-100">
+                <div className="text-6xl mb-4">📊</div>
+                <h3 className="font-semibold text-gray-800 mb-2 text-lg">Tu proyección aparecerá aquí</h3>
+                <p className="text-sm text-gray-500 leading-relaxed max-w-xs mx-auto">
+                  Completa el formulario y haz clic en{' '}
+                  <span className="font-medium text-teal-600">&quot;Simular ahorro&quot;</span> para ver
+                  cómo crece tu plata en el tiempo.
+                </p>
+                <div className="mt-6 grid grid-cols-3 gap-3 text-center">
+                  {[
+                    { icon: '🎯', label: 'Define tu meta' },
+                    { icon: '📈', label: 'Ve la proyección' },
+                    { icon: '💡', label: 'Aprende al hacerlo' },
+                  ].map((item) => (
+                    <div key={item.label} className="bg-white rounded-xl p-3 border border-teal-100 shadow-sm">
+                      <div className="text-xl mb-1">{item.icon}</div>
+                      <p className="text-xs text-gray-500 font-medium">{item.label}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </main>
-    </div>
+
+      {/* Renta variable section */}
+      <div className="mt-4">
+        <RentaVariableSection />
+      </div>
+    </>
   );
 }
