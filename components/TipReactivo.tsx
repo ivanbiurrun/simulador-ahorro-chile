@@ -1,6 +1,8 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
+import { askGemini } from '@/lib/gemini';
+import { buildTipsPrompt, genericTip } from '@/lib/tips-prompt';
 import { formatCLP } from '@/lib/formatters';
 import { toMonths } from '@/hooks/useSimulador';
 import type { SimulatorFormData, SimulationResult } from '@/types';
@@ -28,14 +30,12 @@ function localTip(result: SimulationResult, formData: SimulatorFormData): string
   const extraMonthlyNeeded = formData.monthlyContribution > 0
     ? Math.ceil((result.gap / termMonths) / 1000) * 1000
     : null;
-
   const extraMonths = formData.monthlyContribution > 0
     ? Math.ceil(result.gap / formData.monthlyContribution)
     : null;
-
   const totalMonths = termMonths + (extraMonths ?? 0);
   const totalLabel = totalMonths >= 12
-    ? `${Math.round(totalMonths / 12 * 10) / 10} años`
+    ? `${Math.round((totalMonths / 12) * 10) / 10} años`
     : `${totalMonths} meses`;
 
   if (extraMonthlyNeeded !== null && extraMonths !== null) {
@@ -57,37 +57,30 @@ export default function TipReactivo({ formData, result }: TipReactivoProps) {
     setFromAI(false);
     setLoading(true);
 
-    const termMonths = toMonths(formData.termValue, formData.termUnit);
-    const controller = new AbortController();
+    const prompt = buildTipsPrompt(formData, result);
+    // Clave de caché: granularidad por resultado y producto
+    const cacheKey = `tip_${formData.productType}_${result.reachesGoal ? 'ok' : 'nok'}_${Math.round(result.finalAmount / 50000)}`;
 
-    fetch('/api/tips', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      signal: controller.signal,
-      body: JSON.stringify({
-        objectiveName: formData.objectiveName,
-        targetAmount: result.targetAmount,
-        finalAmount: result.finalAmount,
-        productType: formData.productType,
-        annualRate: formData.annualRate,
-        termMonths,
-        reachesGoal: result.reachesGoal,
-        surplus: result.surplus,
-        gap: result.gap,
-      }),
-    })
-      .then((r) => r.json())
-      .then((data) => {
-        const aiTip = typeof data.tips === 'string' ? data.tips.trim() : '';
-        if (aiTip && isCompleteSentence(aiTip) && data.model !== 'fallback') {
-          setTip(aiTip);
+    let cancelled = false;
+
+    askGemini(prompt, { cacheKey, maxRetries: 2, timeoutMs: 9000 })
+      .then(({ text }) => {
+        if (cancelled) return;
+        if (text && isCompleteSentence(text)) {
+          setTip(text);
           setFromAI(true);
+        } else {
+          setTip(genericTip(result));
         }
       })
-      .catch(() => { /* usar localTip */ })
-      .finally(() => setLoading(false));
+      .catch(() => {
+        if (!cancelled) setTip(genericTip(result));
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
 
-    return () => controller.abort();
+    return () => { cancelled = true; };
   }, [formData, result]);
 
   return (
