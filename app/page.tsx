@@ -4,6 +4,7 @@ import HeroIntro from '@/components/HeroIntro';
 import ObjetivoForm from '@/components/ObjetivoForm';
 import ResultPanel from '@/components/ResultPanel';
 import ProductFlipCards from '@/components/ProductFlipCards';
+import EscuchaBloque from '@/components/EscuchaBloque';
 import ConceptosBloque from '@/components/ConceptosBloque';
 import NovedadesBloque from '@/components/NovedadesBloque';
 import LottiePlayer from '@/components/LottiePlayer';
@@ -143,6 +144,10 @@ export default function Home() {
 
       <div className="mt-6" style={{ borderTop: '1px solid rgba(22,36,29,0.06)' }}>
         <ProductFlipCards />
+      </div>
+
+      <div style={{ borderTop: '1px solid rgba(22,36,29,0.06)' }}>
+        <EscuchaBloque />
       </div>
 
       <div style={{ borderTop: '1px solid rgba(22,36,29,0.06)' }}>
