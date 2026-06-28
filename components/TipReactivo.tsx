@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { formatCLP } from '@/lib/formatters';
 import { toMonths } from '@/hooks/useSimulador';
 import type { SimulatorFormData, SimulationResult } from '@/types';
@@ -48,6 +49,7 @@ export default function TipReactivo({ formData, result }: TipReactivoProps) {
   const [tip, setTip] = useState<string>(() => localTip(result, formData));
   const [fromAI, setFromAI] = useState(false);
   const [loading, setLoading] = useState(true);
+  const reduced = useReducedMotion();
 
   useEffect(() => {
     const local = localTip(result, formData);
@@ -91,7 +93,15 @@ export default function TipReactivo({ formData, result }: TipReactivoProps) {
   return (
     <div className="rounded-2xl p-4 border" style={{ background: '#E7F2FD', borderColor: 'rgba(77,171,247,0.2)' }}>
       <div className="flex items-center justify-between mb-2.5">
-        <h3 className="font-semibold text-sm" style={{ color: '#1565A8' }}>💡 Consejo</h3>
+        <h3 className="font-semibold text-sm flex items-center gap-1.5" style={{ color: '#1565A8' }}>
+          <motion.span
+            animate={reduced ? {} : { opacity: [1, 0.55, 1] }}
+            transition={{ duration: 2.4, repeat: Infinity, ease: 'easeInOut' }}
+          >
+            💡
+          </motion.span>
+          Consejo
+        </h3>
         <span
           className="text-xs px-2 py-0.5 rounded-full bg-white"
           style={{ color: '#4DABF7', border: '1px solid rgba(77,171,247,0.3)' }}
@@ -100,7 +110,19 @@ export default function TipReactivo({ formData, result }: TipReactivoProps) {
         </span>
       </div>
 
-      <p className="text-sm leading-relaxed" style={{ color: '#16241D' }}>{tip}</p>
+      <AnimatePresence mode="wait">
+        <motion.p
+          key={tip}
+          initial={reduced ? false : { opacity: 0, y: 4 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.3 }}
+          className="text-sm leading-relaxed"
+          style={{ color: '#16241D' }}
+        >
+          {tip}
+        </motion.p>
+      </AnimatePresence>
 
       <p
         className="text-[11px] mt-3 pt-2.5"
