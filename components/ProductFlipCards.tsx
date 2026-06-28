@@ -20,7 +20,6 @@ const PRODUCT_ACCENT: Record<ProductType, string> = {
   apv:               '#D85A30',
 };
 
-// TODO: completar con tasas reales verificadas y fecha de actualización
 const TOP3: Record<ProductType, Array<{ nombre: string; referencia: string }>> = {
   cuenta_remunerada: [
     { nombre: 'Mercado Pago Chile', referencia: 'mercadopago.com/cl' },
@@ -51,6 +50,11 @@ const RISK_STYLE: Record<ProductInfo['riskLevel'], React.CSSProperties> = {
   'Alto':     { background: '#FEE8E7', color: '#C0392B' },
 };
 
+function shortDesc(text: string): string {
+  const match = text.match(/^.+?[.!?](?:\s|$)/);
+  return match ? match[0].trim() : text;
+}
+
 function FlipCard({ product }: { product: ProductInfo }) {
   const [flipped, setFlipped] = useState(false);
   const reduced = useReducedMotion();
@@ -71,14 +75,13 @@ function FlipCard({ product }: { product: ProductInfo }) {
       <motion.div
         animate={{ rotateY: flipped ? 180 : 0 }}
         transition={{ duration: reduced ? 0 : 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
-        style={{ transformStyle: 'preserve-3d', position: 'relative', minHeight: 270 }}
+        style={{ transformStyle: 'preserve-3d', position: 'relative', minHeight: 310 }}
       >
-        {/* Frente */}
+        {/* Frente — resumen conciso (primera oración) sin scroll */}
         <div
           style={{
             backfaceVisibility: 'hidden',
             WebkitBackfaceVisibility: 'hidden',
-            borderLeft: `3px solid ${accent}`,
             boxShadow: '0 2px 10px rgba(22,36,29,0.06)',
             border: `1px solid #F0E9DC`,
             borderLeftWidth: '3px',
@@ -95,12 +98,10 @@ function FlipCard({ product }: { product: ProductInfo }) {
           <h3 className="font-semibold text-tinta mb-2 leading-tight" style={{ fontSize: '18px', fontWeight: 600 }}>
             {product.name}
           </h3>
-          <div className="flex-1 overflow-y-auto pr-1 -mr-1" style={{ maxHeight: '90px' }}>
-            <p className="leading-relaxed" style={{ fontSize: '15px', color: '#5C635A' }}>
-              {product.description}
-            </p>
-          </div>
-          <div className="mt-3 flex items-center justify-between">
+          <p className="leading-relaxed flex-1" style={{ fontSize: '14px', color: '#5C635A' }}>
+            {shortDesc(product.description)}
+          </p>
+          <div className="mt-4 flex items-center justify-between">
             <span
               className="text-[11px] font-semibold px-2.5 py-1 rounded-full"
               style={RISK_STYLE[product.riskLevel]}
@@ -111,7 +112,7 @@ function FlipCard({ product }: { product: ProductInfo }) {
           </div>
         </div>
 
-        {/* Dorso */}
+        {/* Dorso — descripción completa + dónde encontrarlo */}
         <div
           style={{
             backfaceVisibility: 'hidden',
@@ -122,10 +123,14 @@ function FlipCard({ product }: { product: ProductInfo }) {
           }}
           className="absolute inset-0 rounded-2xl p-5 flex flex-col"
         >
-          <h3 className="font-bold text-tinta text-sm mb-3">Dónde encontrarlo</h3>
-          <div className="space-y-2 flex-1">
+          <p className="text-[13px] leading-relaxed mb-3" style={{ color: '#16241D' }}>
+            {product.description}
+          </p>
+          <div className="h-px mb-3" style={{ background: `${accent}40` }} />
+          <h3 className="font-bold text-tinta text-xs mb-2">Dónde encontrarlo</h3>
+          <div className="space-y-1.5 flex-1">
             {top3.map((inst, i) => (
-              <div key={i} className="flex items-center justify-between bg-white rounded-xl px-3 py-2" style={{ border: '1px solid #F0E9DC' }}>
+              <div key={i} className="flex items-center justify-between bg-white rounded-xl px-3 py-1.5" style={{ border: '1px solid #F0E9DC' }}>
                 <span className="text-xs font-medium text-tinta">{inst.nombre}</span>
                 <span className="text-[10px] ml-2 truncate" style={{ color: '#7A8077' }}>
                   {inst.referencia}
@@ -133,10 +138,10 @@ function FlipCard({ product }: { product: ProductInfo }) {
               </div>
             ))}
           </div>
-          <p className="text-[10px] mt-3 leading-snug" style={{ color: '#7A8077' }}>
-            Referencial · verifica tasas vigentes en cada sitio oficial antes de decidir.
+          <p className="text-[10px] mt-2.5 leading-snug" style={{ color: '#7A8077' }}>
+            Referencial · verifica tasas vigentes antes de decidir.
           </p>
-          <span className="text-[10px] mt-2" style={{ color: 'rgba(22,36,29,0.25)' }}>← Toca para volver</span>
+          <span className="text-[10px] mt-1" style={{ color: 'rgba(22,36,29,0.25)' }}>← Toca para volver</span>
         </div>
       </motion.div>
     </div>
