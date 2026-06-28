@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { Plus_Jakarta_Sans } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/next';
-import Header from '@/components/Header';
+import TopBar from '@/components/TopBar';
 import Disclaimer from '@/components/Disclaimer';
 import './globals.css';
 
@@ -22,7 +22,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="es" className={`${jakarta.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col bg-crema text-tinta">
-        <Header />
+        <TopBar />
         <div className="flex-1">{children}</div>
         <Disclaimer />
         <Analytics />

@@ -1,5 +1,6 @@
 'use client';
 import CountUp from 'react-countup';
+import { useReducedMotion } from 'framer-motion';
 import { formatCLP } from '@/lib/formatters';
 import type { SimulationResult } from '@/types';
 
@@ -7,25 +8,27 @@ function Card({
   label,
   value,
   sub,
-  accent,
+  green,
+  alert,
   animate,
 }: {
   label: string;
   value: number;
   sub?: string;
-  accent?: 'verde' | 'riesgo' | 'default';
+  green?: boolean;
+  alert?: boolean;
   animate?: boolean;
 }) {
-  const valueColor =
-    accent === 'verde'  ? 'text-verde' :
-    accent === 'riesgo' ? 'text-riesgo' :
-    'text-tinta';
+  const reduced = useReducedMotion();
+  const valueColor = green ? 'text-verde-oscuro' : alert ? 'text-riesgo' : 'text-tinta';
 
   return (
     <div className="bg-white rounded-2xl p-4 shadow-card">
-      <p className="text-xs text-gray-400 font-medium mb-1 leading-tight">{label}</p>
-      <p className={`text-lg font-bold tabular-nums leading-tight ${valueColor}`}>
-        {animate ? (
+      <p className="text-xs font-medium mb-1.5 leading-tight" style={{ color: 'rgba(22,36,29,0.45)' }}>
+        {label}
+      </p>
+      <p className={`text-2xl font-bold tabular-nums leading-tight ${valueColor}`}>
+        {animate && !reduced ? (
           <CountUp
             key={value}
             start={0}
@@ -38,7 +41,11 @@ function Card({
           formatCLP(value)
         )}
       </p>
-      {sub && <p className="text-xs text-gray-400 mt-1">{sub}</p>}
+      {sub && (
+        <p className="text-xs mt-1" style={{ color: green ? '#0B7A56' : alert ? '#E8554E' : 'rgba(22,36,29,0.45)' }}>
+          {sub}
+        </p>
+      )}
     </div>
   );
 }
@@ -46,26 +53,20 @@ function Card({
 export default function MetricCards({ result }: { result: SimulationResult }) {
   return (
     <div className="grid grid-cols-2 gap-3">
-      <Card
-        label="Monto final proyectado"
-        value={result.finalAmount}
-      />
+      <Card label="Monto final proyectado" value={result.finalAmount} />
       <Card
         label="Tu objetivo"
         value={result.targetAmount}
         sub={result.reachesGoal ? '✓ Alcanzado' : `Faltan ${formatCLP(result.gap)}`}
-        accent={result.reachesGoal ? 'verde' : 'riesgo'}
+        green={result.reachesGoal}
+        alert={!result.reachesGoal}
       />
-      <Card
-        label="Total aportado"
-        value={result.totalContributed}
-        sub="Tu capital"
-      />
+      <Card label="Total aportado" value={result.totalContributed} sub="Tu capital" />
       <Card
         label="Rendimiento generado"
         value={result.interestEarned}
         sub="Lo que trabajó tu plata"
-        accent="verde"
+        green
         animate
       />
     </div>

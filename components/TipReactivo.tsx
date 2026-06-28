@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
+import { formatCLP } from '@/lib/formatters';
 import { toMonths } from '@/hooks/useSimulador';
 import type { SimulatorFormData, SimulationResult } from '@/types';
 
@@ -8,15 +9,30 @@ interface TipReactivoProps {
   result: SimulationResult;
 }
 
+function localTip(result: SimulationResult, formData: SimulatorFormData): string {
+  const termMonths = toMonths(formData.termValue, formData.termUnit);
+  const clp = formatCLP;
+
+  if (result.reachesGoal) {
+    if (result.surplus < result.targetAmount * 0.04) {
+      return `Justo llegas. Para tener un colchón, suma un par de meses de aporte — es mejor llegar con margen que exacto.`;
+    }
+    return `Te sobran ${clp(result.surplus)}. Si no los necesitas para "${formData.objectiveName}", en un fondo mutuo podrían seguir creciendo en vez de quedarse quietos en la cuenta.`;
+  }
+
+  const extraNeeded = Math.ceil((result.gap / termMonths) / 1000) * 1000;
+  return `Te faltan ${clp(result.gap)}. Sube el aporte mensual en ~${clp(extraNeeded)} o extiende el plazo unos meses para llegar — ambas palancas se potencian con el interés compuesto.`;
+}
+
 export default function TipReactivo({ formData, result }: TipReactivoProps) {
-  const [tip, setTip] = useState('');
+  const [tip, setTip] = useState(() => localTip(result, formData));
+  const [fromAI, setFromAI] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
 
   useEffect(() => {
+    setTip(localTip(result, formData));
+    setFromAI(false);
     setLoading(true);
-    setError(false);
-    setTip('');
 
     const termMonths = toMonths(formData.termValue, formData.termUnit);
 
@@ -36,42 +52,31 @@ export default function TipReactivo({ formData, result }: TipReactivoProps) {
       }),
     })
       .then((r) => r.json())
-      .then((data) => setTip((data.tips as string).trim()))
-      .catch(() => setError(true))
+      .then((data) => {
+        const aiTip = (data.tips as string).trim();
+        if (aiTip) {
+          setTip(aiTip);
+          setFromAI(true);
+        }
+      })
+      .catch(() => { /* mantener localTip */ })
       .finally(() => setLoading(false));
   }, [formData, result]);
 
   return (
-    <div className="bg-cielo-tint border border-cielo/25 rounded-2xl p-5">
-      <div className="flex items-center justify-between mb-3">
-        <h3 className="font-semibold text-tinta text-sm">💡 Consejo educativo</h3>
-        <span className="text-xs text-cielo bg-white px-2.5 py-0.5 rounded-full border border-cielo/30">
-          IA · solo educativo
+    <div className="rounded-2xl p-4 border" style={{ background: '#E7F2FD', borderColor: 'rgba(77,171,247,0.2)' }}>
+      <div className="flex items-center justify-between mb-2.5">
+        <h3 className="font-semibold text-sm" style={{ color: '#1565A8' }}>💡 Consejo</h3>
+        <span className="text-xs px-2 py-0.5 rounded-full bg-white" style={{ color: '#4DABF7', border: '1px solid rgba(77,171,247,0.3)' }}>
+          {loading ? 'cargando…' : fromAI ? 'IA · educativo' : 'educativo'}
         </span>
       </div>
 
-      {loading && (
-        <div className="animate-pulse space-y-2">
-          <div className="h-3 bg-cielo/25 rounded-full w-full" />
-          <div className="h-3 bg-cielo/25 rounded-full w-5/6" />
-          <div className="h-3 bg-cielo/25 rounded-full w-4/6" />
-        </div>
-      )}
+      <p className="text-sm leading-relaxed" style={{ color: '#16241D' }}>{tip}</p>
 
-      {error && (
-        <p className="text-sm text-gray-400 text-center py-2">
-          No se pudo cargar el consejo ahora. El simulador igual funciona completo.
-        </p>
-      )}
-
-      {!loading && !error && tip && (
-        <>
-          <p className="text-sm text-tinta leading-relaxed">{tip}</p>
-          <p className="text-xs text-gray-400 mt-3 border-t border-cielo/20 pt-3">
-            Educativo y general. No es asesoría financiera ni recomendación personal.
-          </p>
-        </>
-      )}
+      <p className="text-[11px] mt-3 pt-2.5" style={{ borderTop: '1px solid rgba(77,171,247,0.15)', color: 'rgba(22,36,29,0.4)' }}>
+        Educativo y general. No es asesoría financiera ni recomendación personal.
+      </p>
     </div>
   );
 }
