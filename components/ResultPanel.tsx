@@ -3,6 +3,7 @@ import ResultHeader from './ResultHeader';
 import MetricCards from './MetricCards';
 import EvolucionTabla from './EvolucionTabla';
 import TipReactivo from './TipReactivo';
+import ShareCard from './ShareCard';
 import type { SimulatorFormData, SimulationResult } from '@/types';
 
 interface ResultPanelProps {
@@ -17,6 +18,7 @@ export default function ResultPanel({ formData, result }: ResultPanelProps) {
       <MetricCards result={result} />
       <EvolucionTabla tableData={result.tableData} annualData={result.annualData} />
       <TipReactivo formData={formData} result={result} />
+      <ShareCard formData={formData} result={result} />
     </div>
   );
 }
