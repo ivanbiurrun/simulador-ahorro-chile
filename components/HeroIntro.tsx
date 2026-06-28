@@ -11,8 +11,8 @@ export default function HeroIntro() {
       style={{ background: 'linear-gradient(160deg, #E3F7EF 0%, #FBF5EC 100%)' }}
     >
       <div className="max-w-[1440px] mx-auto px-10 lg:px-12">
-        <h1 className="font-bold text-tinta mb-2 leading-tight" style={{ fontSize: '32px' }}>
-          Ahorra con cabeza 🇨🇱
+        <h1 className="font-bold text-tinta mb-2 leading-tight" style={{ fontSize: '38px' }}>
+          AHORRA CON CABEZA 🇨🇱
         </h1>
         <p className="mb-1" style={{ fontSize: '16px', lineHeight: 1.5, color: '#5C635A', maxWidth: '680px' }}>
           Aprende a hacer crecer tu plata: compara los productos de ahorro e inversión de Chile
