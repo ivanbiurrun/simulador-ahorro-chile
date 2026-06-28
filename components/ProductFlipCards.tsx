@@ -13,6 +13,13 @@ const PRODUCT_ICONS: Record<ProductType, LucideIcon> = {
   fondo_mutuo:       BarChart3,
 };
 
+const PRODUCT_ACCENT: Record<ProductType, string> = {
+  cuenta_remunerada: '#378ADD',
+  deposito_plazo:    '#1D9E75',
+  fondo_mutuo:       '#7F77DD',
+  apv:               '#D85A30',
+};
+
 // TODO: completar con tasas reales verificadas y fecha de actualización
 const TOP3: Record<ProductType, Array<{ nombre: string; referencia: string }>> = {
   cuenta_remunerada: [
@@ -31,23 +38,24 @@ const TOP3: Record<ProductType, Array<{ nombre: string; referencia: string }>> =
     { nombre: 'BancoEstado', referencia: 'bancoestado.cl' },
   ],
   fondo_mutuo: [
-    { nombre: 'Fintual',         referencia: 'fintual.com' },
-    { nombre: 'Buscafondos.cl',  referencia: 'buscafondos.cl' },
+    { nombre: 'Fintual',           referencia: 'fintual.com' },
+    { nombre: 'Buscafondos.cl',    referencia: 'buscafondos.cl' },
     { nombre: 'Tu administradora', referencia: 'web oficial' },
   ],
 };
 
-const RISK_STYLE: Record<ProductInfo['riskLevel'], string> = {
-  'Muy bajo': 'bg-verde-tint text-verde-oscuro',
-  'Bajo':     'bg-verde-tint text-verde-oscuro',
-  'Medio':    'bg-mango-tint text-mango-oscuro',
-  'Alto':     'bg-red-50 text-riesgo',
+const RISK_STYLE: Record<ProductInfo['riskLevel'], React.CSSProperties> = {
+  'Muy bajo': { background: '#E3F7EF', color: '#0B7A56' },
+  'Bajo':     { background: '#E3F7EF', color: '#0B7A56' },
+  'Medio':    { background: '#FDEBCF', color: '#8A5A0C' },
+  'Alto':     { background: '#FEE8E7', color: '#C0392B' },
 };
 
 function FlipCard({ product }: { product: ProductInfo }) {
   const [flipped, setFlipped] = useState(false);
   const reduced = useReducedMotion();
   const Icon = PRODUCT_ICONS[product.id];
+  const accent = PRODUCT_ACCENT[product.id];
   const top3 = TOP3[product.id];
 
   return (
@@ -63,22 +71,40 @@ function FlipCard({ product }: { product: ProductInfo }) {
       <motion.div
         animate={{ rotateY: flipped ? 180 : 0 }}
         transition={{ duration: reduced ? 0 : 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
-        style={{ transformStyle: 'preserve-3d', position: 'relative', minHeight: 256 }}
+        style={{ transformStyle: 'preserve-3d', position: 'relative', minHeight: 270 }}
       >
         {/* Frente */}
         <div
-          style={{ backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden' }}
-          className="absolute inset-0 bg-white rounded-2xl shadow-card p-5 flex flex-col"
+          style={{
+            backfaceVisibility: 'hidden',
+            WebkitBackfaceVisibility: 'hidden',
+            borderLeft: `3px solid ${accent}`,
+            boxShadow: '0 2px 10px rgba(22,36,29,0.06)',
+            border: `1px solid #F0E9DC`,
+            borderLeftWidth: '3px',
+            borderLeftColor: accent,
+          }}
+          className="absolute inset-0 bg-white rounded-2xl p-5 flex flex-col"
         >
-          <div className="w-11 h-11 bg-verde-tint rounded-xl flex items-center justify-center mb-3">
-            <Icon className="w-5 h-5 text-verde-oscuro" />
+          <div
+            className="w-11 h-11 rounded-xl flex items-center justify-center mb-3 flex-shrink-0"
+            style={{ background: `${accent}18` }}
+          >
+            <Icon className="w-5 h-5" style={{ color: accent }} />
           </div>
-          <h3 className="font-bold text-tinta text-sm mb-1.5 leading-tight">{product.name}</h3>
-          <p className="text-xs leading-relaxed flex-1 line-clamp-4" style={{ color: 'rgba(22,36,29,0.6)' }}>
-            {product.description}
-          </p>
+          <h3 className="font-semibold text-tinta mb-2 leading-tight" style={{ fontSize: '18px', fontWeight: 600 }}>
+            {product.name}
+          </h3>
+          <div className="flex-1 overflow-y-auto pr-1 -mr-1" style={{ maxHeight: '90px' }}>
+            <p className="leading-relaxed" style={{ fontSize: '15px', color: '#5C635A' }}>
+              {product.description}
+            </p>
+          </div>
           <div className="mt-3 flex items-center justify-between">
-            <span className={`text-[11px] font-semibold px-2.5 py-1 rounded-full ${RISK_STYLE[product.riskLevel]}`}>
+            <span
+              className="text-[11px] font-semibold px-2.5 py-1 rounded-full"
+              style={RISK_STYLE[product.riskLevel]}
+            >
               Riesgo {product.riskLevel}
             </span>
             <span className="text-[10px]" style={{ color: 'rgba(22,36,29,0.25)' }}>Toca →</span>
@@ -91,21 +117,23 @@ function FlipCard({ product }: { product: ProductInfo }) {
             backfaceVisibility: 'hidden',
             WebkitBackfaceVisibility: 'hidden',
             transform: 'rotateY(180deg)',
+            background: `${accent}12`,
+            border: `1px solid ${accent}30`,
           }}
-          className="absolute inset-0 bg-verde-tint rounded-2xl p-5 flex flex-col"
+          className="absolute inset-0 rounded-2xl p-5 flex flex-col"
         >
           <h3 className="font-bold text-tinta text-sm mb-3">Dónde encontrarlo</h3>
           <div className="space-y-2 flex-1">
             {top3.map((inst, i) => (
-              <div key={i} className="flex items-center justify-between bg-white rounded-xl px-3 py-2">
+              <div key={i} className="flex items-center justify-between bg-white rounded-xl px-3 py-2" style={{ border: '1px solid #F0E9DC' }}>
                 <span className="text-xs font-medium text-tinta">{inst.nombre}</span>
-                <span className="text-[10px] ml-2 truncate" style={{ color: 'rgba(22,36,29,0.4)' }}>
+                <span className="text-[10px] ml-2 truncate" style={{ color: '#7A8077' }}>
                   {inst.referencia}
                 </span>
               </div>
             ))}
           </div>
-          <p className="text-[10px] mt-3 leading-snug" style={{ color: 'rgba(22,36,29,0.4)' }}>
+          <p className="text-[10px] mt-3 leading-snug" style={{ color: '#7A8077' }}>
             Referencial · verifica tasas vigentes en cada sitio oficial antes de decidir.
           </p>
           <span className="text-[10px] mt-2" style={{ color: 'rgba(22,36,29,0.25)' }}>← Toca para volver</span>
@@ -117,10 +145,10 @@ function FlipCard({ product }: { product: ProductInfo }) {
 
 export default function ProductFlipCards() {
   return (
-    <section className="max-w-screen-xl mx-auto px-4 sm:px-6 py-10">
-      <div className="mb-5">
-        <h2 className="text-xl font-bold text-tinta">Conoce los productos</h2>
-        <p className="text-sm mt-0.5" style={{ color: 'rgba(22,36,29,0.5)' }}>
+    <section className="max-w-[1440px] mx-auto px-10 lg:px-12 py-10">
+      <div className="mb-6">
+        <h2 className="font-bold text-tinta" style={{ fontSize: '24px', fontWeight: 700 }}>Conoce los productos</h2>
+        <p className="text-sm mt-1" style={{ color: '#7A8077' }}>
           Toca cada tarjeta para ver dónde encontrarlo
         </p>
       </div>
