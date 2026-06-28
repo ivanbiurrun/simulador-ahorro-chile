@@ -8,6 +8,7 @@ import EscuchaBloque from '@/components/EscuchaBloque';
 import ConceptosBloque from '@/components/ConceptosBloque';
 import NovedadesBloque from '@/components/NovedadesBloque';
 import LottiePlayer from '@/components/LottiePlayer';
+import ChatIA from '@/components/ChatIA';
 import coinAnimation from '@/lib/animations/coin.json';
 import { useSimulador } from '@/hooks/useSimulador';
 import type { SimulatorFormData } from '@/types';
@@ -157,6 +158,8 @@ export default function Home() {
       <div style={{ borderTop: '1px solid rgba(22,36,29,0.06)' }}>
         <NovedadesBloque />
       </div>
+
+      <ChatIA />
     </>
   );
 }
