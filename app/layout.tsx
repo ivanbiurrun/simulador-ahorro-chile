@@ -1,22 +1,27 @@
 import type { Metadata } from 'next';
-import { Geist } from 'next/font/google';
+import { Plus_Jakarta_Sans } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/next';
 import Header from '@/components/Header';
 import Disclaimer from '@/components/Disclaimer';
 import './globals.css';
 
-const geist = Geist({ subsets: ['latin'] });
+const jakarta = Plus_Jakarta_Sans({
+  subsets: ['latin'],
+  variable: '--font-jakarta',
+  weight: ['400', '500', '700'],
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
-  title: 'Simulador de Ahorro · Chile 🇨🇱',
+  title: 'Ahorra con Cabeza · Chile 🇨🇱',
   description:
-    'Toma el control de tus metas y aprende a decidir mejor con tu plata. Herramienta educativa y de planificación financiera para el mercado chileno.',
+    'Más que un simulador: una herramienta para aprender a hacer crecer tu plata. Define una meta, compara los productos de ahorro e inversión disponibles en Chile y entiende cómo funciona cada uno.',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="es" className={`${geist.className} h-full antialiased`}>
-      <body className="min-h-full flex flex-col bg-gray-50">
+    <html lang="es" className={`${jakarta.variable} h-full antialiased`}>
+      <body className="min-h-full flex flex-col bg-crema text-tinta">
         <Header />
         <div className="flex-1">{children}</div>
         <Disclaimer />

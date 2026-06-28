@@ -2,14 +2,14 @@ export default function Header() {
   return (
     <header
       className="relative text-white py-16 sm:py-20 px-6 overflow-hidden"
-      style={{ background: 'linear-gradient(135deg, #022c22 0%, #065f46 52%, #059669 100%)' }}
+      style={{ background: 'linear-gradient(135deg, #0B7A56 0%, #12B886 100%)' }}
     >
       {/* Glow accent — upper right */}
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
           background:
-            'radial-gradient(ellipse at 68% 30%, rgba(52,211,153,0.25) 0%, transparent 58%)',
+            'radial-gradient(ellipse at 68% 30%, rgba(255,255,255,0.12) 0%, transparent 58%)',
         }}
       />
 
@@ -33,7 +33,7 @@ export default function Header() {
             strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
-            className="w-10 h-10 sm:w-14 sm:h-14 flex-shrink-0 text-emerald-300"
+            className="w-10 h-10 sm:w-14 sm:h-14 flex-shrink-0 text-white/70"
             aria-hidden="true"
           >
             <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />

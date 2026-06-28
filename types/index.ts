@@ -1,5 +1,5 @@
 export type ProductType = 'cuenta_remunerada' | 'deposito_plazo' | 'apv' | 'fondo_mutuo';
-export type TermUnit = 'meses' | 'años';
+export type TermUnit = 'días' | 'meses' | 'años';
 export type CategoryType =
   | 'vivienda'
   | 'vehiculo'
