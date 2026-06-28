@@ -24,6 +24,7 @@ export default function ResultHeader({ formData, result }: ResultHeaderProps) {
   const reduced = useReducedMotion();
   const firedRef = useRef<number | null>(null);
   const completion = Math.min((result.finalAmount / result.targetAmount) * 100, 100);
+  const glowAmbar = !result.reachesGoal && !reduced;
 
   useEffect(() => {
     if (result.reachesGoal && !reduced && firedRef.current !== result.finalAmount) {
@@ -40,8 +41,14 @@ export default function ResultHeader({ formData, result }: ResultHeaderProps) {
 
   return (
     <div className="mb-2">
-      {/* Pill + texto */}
-      <div className="flex items-center gap-2.5 flex-wrap mb-3">
+      {/* Pill + texto — entrada spring al cambiar de estado */}
+      <motion.div
+        key={result.reachesGoal ? 'alcanzada' : 'falta'}
+        className="flex items-center gap-2.5 flex-wrap mb-3"
+        initial={reduced ? false : { y: 8, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ type: 'spring', stiffness: 380, damping: 22 }}
+      >
         <span
           className="text-xs font-semibold px-2.5 py-1 rounded-full inline-flex items-center gap-1"
           style={
@@ -50,28 +57,39 @@ export default function ResultHeader({ formData, result }: ResultHeaderProps) {
               : { background: '#FDEBCF', color: '#8A5A0C' }
           }
         >
-          {result.reachesGoal ? '✓ Meta alcanzada' : (
-            <>
-              ↑ Te falta
-            </>
-          )}
+          {result.reachesGoal ? '✓ Meta alcanzada' : '↑ Te falta'}
         </span>
         <p className="text-sm leading-snug" style={{ color: '#16241D' }}>
           {result.reachesGoal
             ? `Llegas a "${formData.objectiveName}" en ${termLabel(formData)} · te sobran ${formatCLP(result.surplus)}`
             : `"${formData.objectiveName}" · te faltan ${formatCLP(result.gap)}`}
         </p>
-      </div>
+      </motion.div>
 
-      {/* Barra de progreso — anima en los dos casos */}
-      <div className="h-1.5 rounded-full overflow-hidden" style={{ background: '#E3F7EF' }}>
+      {/* Barra de progreso */}
+      <div className="relative h-1.5">
+        {/* Glow ámbar cuando no alcanza — fuera del overflow-hidden del track */}
         <motion.div
-          className="h-full rounded-full"
-          style={{ background: result.reachesGoal ? '#12B886' : '#F4A82C' }}
-          initial={{ width: 0 }}
-          animate={{ width: `${completion}%` }}
-          transition={{ duration: reduced ? 0 : 0.85, ease: [0.25, 0.46, 0.45, 0.94] }}
+          className="absolute inset-0 rounded-full pointer-events-none"
+          animate={glowAmbar ? {
+            boxShadow: [
+              '0 0 0 0 rgba(244,168,44,0)',
+              '0 0 0 5px rgba(244,168,44,0.35)',
+              '0 0 0 0 rgba(244,168,44,0)',
+            ],
+          } : { boxShadow: '0 0 0 0 rgba(0,0,0,0)' }}
+          transition={{ delay: 1, duration: 1.5, repeat: 1, repeatDelay: 0.4 }}
         />
+        {/* Track */}
+        <div className="h-full rounded-full overflow-hidden" style={{ background: '#E3F7EF' }}>
+          <motion.div
+            className="h-full rounded-full"
+            style={{ background: result.reachesGoal ? '#12B886' : '#F4A82C' }}
+            initial={{ width: 0 }}
+            animate={{ width: `${completion}%` }}
+            transition={reduced ? { duration: 0 } : { type: 'spring', stiffness: 55, damping: 12 }}
+          />
+        </div>
       </div>
       <p className="text-xs mt-1 text-right" style={{ color: '#7A8077' }}>
         {completion.toFixed(0)}% de la meta
