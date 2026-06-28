@@ -26,7 +26,10 @@ export default function CLPInput({
 
   return (
     <div className="relative">
-      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 font-medium text-sm pointer-events-none select-none">
+      <span
+        className="absolute left-3 top-1/2 -translate-y-1/2 font-medium text-sm pointer-events-none select-none"
+        style={{ color: '#7A8077' }}
+      >
         $
       </span>
       <input
@@ -37,9 +40,16 @@ export default function CLPInput({
         placeholder={placeholder}
         required={required}
         min={min}
-        className="w-full pl-7 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent text-gray-800 bg-white transition-all"
-        onFocus={() => setFocused(true)}
-        onBlur={() => setFocused(false)}
+        className="w-full pl-7 pr-4 py-3 rounded-[10px] focus:outline-none transition-all text-tinta bg-white text-base"
+        style={{ border: '1px solid #ECE4D6' }}
+        onFocus={(e) => {
+          setFocused(true);
+          (e.currentTarget as HTMLInputElement).style.borderColor = '#12B886';
+        }}
+        onBlur={(e) => {
+          setFocused(false);
+          (e.currentTarget as HTMLInputElement).style.borderColor = '#ECE4D6';
+        }}
         onChange={(e) => {
           const cleaned = e.target.value.replace(/[^\d]/g, '');
           onChange(parseInt(cleaned, 10) || 0);

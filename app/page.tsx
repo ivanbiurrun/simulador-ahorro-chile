@@ -6,6 +6,8 @@ import ResultPanel from '@/components/ResultPanel';
 import ProductFlipCards from '@/components/ProductFlipCards';
 import ConceptosBloque from '@/components/ConceptosBloque';
 import NovedadesBloque from '@/components/NovedadesBloque';
+import LottiePlayer from '@/components/LottiePlayer';
+import coinAnimation from '@/lib/animations/coin.json';
 import { useSimulador } from '@/hooks/useSimulador';
 import type { SimulatorFormData } from '@/types';
 import { formatCLP } from '@/lib/formatters';
@@ -43,13 +45,20 @@ export default function Home() {
               /* Estado cero — layout real del resultado, atenuado */
               <div className="space-y-4" style={{ opacity: 0.65 }}>
 
-                {/* ResultHeader neutro */}
+                {/* ResultHeader neutro con Lottie */}
                 <div>
-                  <p className="text-sm mb-3" style={{ color: '#7A8077' }}>
-                    Completa tu objetivo y toca{' '}
-                    <span className="font-medium" style={{ color: '#F46A1F' }}>"Ver mi proyección"</span>{' '}
-                    para ver la proyección aquí.
-                  </p>
+                  <div className="flex items-center gap-3 mb-3">
+                    <LottiePlayer
+                      animationData={coinAnimation}
+                      style={{ width: 56, height: 56, flexShrink: 0 }}
+                      fallback={<span style={{ fontSize: 40, lineHeight: 1 }}>💰</span>}
+                    />
+                    <p className="text-sm" style={{ color: '#7A8077' }}>
+                      Completa tu objetivo y toca{' '}
+                      <span className="font-medium" style={{ color: '#F46A1F' }}>"Ver mi proyección"</span>{' '}
+                      para ver la proyección aquí.
+                    </p>
+                  </div>
                   <div className="h-1.5 rounded-full" style={{ background: '#E3F7EF' }}>
                     <div className="h-full w-0 rounded-full" style={{ background: '#12B886' }} />
                   </div>

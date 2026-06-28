@@ -35,9 +35,11 @@ export default function EvolucionTabla({ tableData, annualData }: EvolucionTabla
     visible: { opacity: 1, y: 0, transition: { duration: 0.16 } },
   };
 
+  const thStyle: React.CSSProperties = { color: '#7A8077', fontWeight: 500 };
+
   return (
     <div className="bg-white rounded-2xl shadow-card overflow-hidden">
-      <div className="px-4 py-3 flex items-center justify-between border-b" style={{ borderColor: 'rgba(22,36,29,0.05)' }}>
+      <div className="px-4 py-3 flex items-center justify-between" style={{ borderBottom: '1px solid #F2ECE0' }}>
         <h3 className="font-semibold text-tinta text-sm">Evolución del ahorro</h3>
         <div className="flex rounded-xl p-0.5 gap-0.5" style={{ background: 'rgba(22,36,29,0.04)' }}>
           {TABS.map((t) => (
@@ -45,11 +47,14 @@ export default function EvolucionTabla({ tableData, annualData }: EvolucionTabla
               key={t.key}
               type="button"
               onClick={() => setVista(t.key)}
-              className={`text-xs font-medium px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
+              className="text-xs font-medium px-3 py-1.5 rounded-lg transition-all cursor-pointer"
+              style={
                 vista === t.key
-                  ? 'bg-white text-verde-oscuro shadow-sm'
-                  : 'text-tinta/40 hover:text-tinta/70'
-              }`}
+                  ? { background: 'white', color: '#0B7A56', boxShadow: '0 1px 3px rgba(22,36,29,0.1)' }
+                  : { color: 'rgba(22,36,29,0.4)' }
+              }
+              onMouseEnter={(e) => { if (vista !== t.key) (e.currentTarget as HTMLButtonElement).style.color = 'rgba(22,36,29,0.7)'; }}
+              onMouseLeave={(e) => { if (vista !== t.key) (e.currentTarget as HTMLButtonElement).style.color = 'rgba(22,36,29,0.4)'; }}
             >
               {t.label}
             </button>
@@ -59,15 +64,13 @@ export default function EvolucionTabla({ tableData, annualData }: EvolucionTabla
 
       <div className="overflow-auto max-h-60">
         <table className="w-full text-xs tabular-nums">
-          <thead className="sticky top-0 bg-white z-10" style={{ borderBottom: '1px solid rgba(22,36,29,0.05)' }}>
+          <thead className="sticky top-0 bg-white z-10" style={{ borderBottom: '1px solid #F2ECE0' }}>
             <tr>
-              <th className="px-3 py-2 text-left font-medium" style={{ color: 'rgba(22,36,29,0.4)' }}>
-                {vista === 'anual' ? 'Año' : 'Mes'}
-              </th>
-              <th className="px-3 py-2 text-right font-medium" style={{ color: 'rgba(22,36,29,0.4)' }}>Saldo inicio</th>
-              <th className="px-3 py-2 text-right font-medium text-verde-oscuro">Interés</th>
-              <th className="px-3 py-2 text-right font-medium" style={{ color: 'rgba(22,36,29,0.4)' }}>Aporte</th>
-              <th className="px-3 py-2 text-right font-medium" style={{ color: 'rgba(22,36,29,0.4)' }}>Saldo final</th>
+              <th className="px-3 py-2 text-left" style={thStyle}>{vista === 'anual' ? 'Año' : 'Mes'}</th>
+              <th className="px-3 py-2 text-right" style={thStyle}>Saldo inicio</th>
+              <th className="px-3 py-2 text-right font-medium" style={{ color: '#0B7A56' }}>Interés</th>
+              <th className="px-3 py-2 text-right" style={thStyle}>Aporte</th>
+              <th className="px-3 py-2 text-right" style={thStyle}>Saldo final</th>
             </tr>
           </thead>
 
@@ -83,28 +86,32 @@ export default function EvolucionTabla({ tableData, annualData }: EvolucionTabla
                     <motion.tr
                       key={row.año}
                       variants={rowVariants}
-                      className="hover:bg-crema transition-colors"
-                      style={{ borderBottom: '1px solid rgba(22,36,29,0.04)' }}
+                      className="transition-colors cursor-default"
+                      style={{ borderBottom: '1px solid #F2ECE0' }}
+                      onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = '#FBF5EC'; }}
+                      onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
                     >
-                      <td className="px-3 py-2 text-tinta font-medium">Año {row.año}</td>
-                      <td className="px-3 py-2 text-right" style={{ color: 'rgba(22,36,29,0.55)' }}>{formatCLP(row.saldoInicio)}</td>
-                      <td className="px-3 py-2 text-right text-verde-oscuro font-medium">{formatCLP(row.totalIntereses)}</td>
-                      <td className="px-3 py-2 text-right" style={{ color: 'rgba(22,36,29,0.55)' }}>{formatCLP(row.totalAportes)}</td>
-                      <td className="px-3 py-2 text-right text-tinta font-semibold">{formatCLP(row.saldoFinal)}</td>
+                      <td className="px-3 py-2 font-medium text-tinta">Año {row.año}</td>
+                      <td className="px-3 py-2 text-right" style={{ color: '#7A8077' }}>{formatCLP(row.saldoInicio)}</td>
+                      <td className="px-3 py-2 text-right font-medium" style={{ color: '#0B7A56' }}>{formatCLP(row.totalIntereses)}</td>
+                      <td className="px-3 py-2 text-right" style={{ color: '#7A8077' }}>{formatCLP(row.totalAportes)}</td>
+                      <td className="px-3 py-2 text-right font-semibold text-tinta">{formatCLP(row.saldoFinal)}</td>
                     </motion.tr>
                   ))
                 : rows.map((row) => (
                     <motion.tr
                       key={row.mes}
                       variants={rowVariants}
-                      className="hover:bg-crema transition-colors"
-                      style={{ borderBottom: '1px solid rgba(22,36,29,0.04)' }}
+                      className="transition-colors cursor-default"
+                      style={{ borderBottom: '1px solid #F2ECE0' }}
+                      onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = '#FBF5EC'; }}
+                      onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
                     >
-                      <td className="px-3 py-2 text-tinta font-medium">Mes {row.mes}</td>
-                      <td className="px-3 py-2 text-right" style={{ color: 'rgba(22,36,29,0.55)' }}>{formatCLP(row.saldoInicio)}</td>
-                      <td className="px-3 py-2 text-right text-verde-oscuro font-medium">{formatCLP(row.interesMes)}</td>
-                      <td className="px-3 py-2 text-right" style={{ color: 'rgba(22,36,29,0.55)' }}>{formatCLP(row.aporteMes)}</td>
-                      <td className="px-3 py-2 text-right text-tinta font-semibold">{formatCLP(row.saldoFinal)}</td>
+                      <td className="px-3 py-2 font-medium text-tinta">Mes {row.mes}</td>
+                      <td className="px-3 py-2 text-right" style={{ color: '#7A8077' }}>{formatCLP(row.saldoInicio)}</td>
+                      <td className="px-3 py-2 text-right font-medium" style={{ color: '#0B7A56' }}>{formatCLP(row.interesMes)}</td>
+                      <td className="px-3 py-2 text-right" style={{ color: '#7A8077' }}>{formatCLP(row.aporteMes)}</td>
+                      <td className="px-3 py-2 text-right font-semibold text-tinta">{formatCLP(row.saldoFinal)}</td>
                     </motion.tr>
                   ))}
             </motion.tbody>

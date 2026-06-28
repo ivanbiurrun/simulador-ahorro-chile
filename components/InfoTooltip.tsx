@@ -23,7 +23,8 @@ export default function InfoTooltip({ text }: InfoTooltipProps) {
     <span ref={ref} className="relative inline-flex items-center ml-1.5 flex-shrink-0">
       <button
         type="button"
-        className="w-4 h-4 rounded-full bg-blue-100 text-blue-600 text-[10px] font-bold flex items-center justify-center hover:bg-blue-200 focus:outline-none focus:ring-1 focus:ring-blue-400 transition-colors cursor-help"
+        className="w-4 h-4 rounded-full text-[10px] font-bold flex items-center justify-center focus:outline-none transition-colors cursor-help"
+        style={{ background: '#E3F7EF', color: '#0B7A56' }}
         onMouseEnter={() => setVisible(true)}
         onMouseLeave={() => setVisible(false)}
         onClick={() => setVisible((v) => !v)}
@@ -32,9 +33,12 @@ export default function InfoTooltip({ text }: InfoTooltipProps) {
         i
       </button>
       {visible && (
-        <div className="absolute z-50 bottom-full left-1/2 -translate-x-1/2 mb-2 w-64 p-3 bg-gray-900 text-white text-xs rounded-xl shadow-2xl leading-relaxed pointer-events-none">
+        <div
+          className="absolute z-50 bottom-full left-1/2 -translate-x-1/2 mb-2 w-64 p-3 text-white text-xs rounded-xl shadow-2xl leading-relaxed pointer-events-none"
+          style={{ background: '#16241D' }}
+        >
           {text}
-          <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gray-900" />
+          <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent" style={{ borderTopColor: '#16241D' }} />
         </div>
       )}
     </span>

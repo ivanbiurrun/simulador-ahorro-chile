@@ -40,30 +40,49 @@ export default function ObjetivoForm({ onSubmit }: ObjetivoFormProps) {
     onSubmit({ objectiveName, category, targetAmount, initialAmount, monthlyContribution, termValue, termUnit, productType, annualRate });
   }
 
-  const inputBase = 'w-full px-3 py-2.5 border-2 border-gray-100 rounded-xl focus:outline-none focus:border-verde transition-colors text-tinta bg-white placeholder:text-tinta/25 text-sm';
-  const labelBase = 'block text-xs font-medium text-tinta/60 mb-1';
+  const labelBase = 'flex items-center gap-0.5 font-medium mb-1.5';
+  const inputStyle: React.CSSProperties = { border: '1px solid #ECE4D6', borderRadius: '10px' };
+  const inputClass = 'w-full px-3 py-3 focus:outline-none transition-colors text-tinta bg-white placeholder:text-tinta/25 text-base';
+
+  function inputFocus(e: React.FocusEvent<HTMLInputElement | HTMLSelectElement>) {
+    (e.currentTarget as HTMLElement).style.borderColor = '#12B886';
+  }
+  function inputBlur(e: React.FocusEvent<HTMLInputElement | HTMLSelectElement>) {
+    (e.currentTarget as HTMLElement).style.borderColor = '#ECE4D6';
+  }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-5">
+
+      <h2 className="text-2xl font-bold text-tinta">Define tu objetivo</h2>
 
       {/* Categoría */}
       <div>
-        <p className={labelBase}>Categoría del objetivo</p>
+        <p className={labelBase} style={{ fontSize: '15px', color: '#5C635A' }}>Categoría</p>
         <div className="grid grid-cols-4 gap-1.5">
-          {CATEGORIES.map(({ id, label, Icon }) => {
+          {CATEGORIES.map(({ id, label, emoji }) => {
             const active = category === id;
             return (
               <button
                 key={id}
                 type="button"
                 onClick={() => setCategory(id)}
-                className={`flex flex-col items-center gap-1 py-2 px-1 rounded-xl border-2 transition-all text-[11px] font-medium cursor-pointer ${
-                  active
-                    ? 'border-verde bg-verde-tint text-verde-oscuro'
-                    : 'border-gray-100 bg-white text-tinta/40 hover:border-verde/30 hover:text-tinta/70'
-                }`}
+                className="flex flex-col items-center gap-1 py-2 px-1 rounded-xl transition-all cursor-pointer"
+                style={{
+                  fontSize: '14px',
+                  fontWeight: 500,
+                  border: active ? '2px solid #12B886' : '1px solid #ECE4D6',
+                  background: active ? '#E3F7EF' : 'white',
+                  color: active ? '#0B7A56' : '#5C635A',
+                }}
+                onMouseEnter={(e) => {
+                  if (!active) (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(18,184,134,0.4)';
+                }}
+                onMouseLeave={(e) => {
+                  if (!active) (e.currentTarget as HTMLButtonElement).style.borderColor = '#ECE4D6';
+                }}
               >
-                <Icon className={`w-4 h-4 transition-colors ${active ? 'text-verde' : 'text-tinta/30'}`} />
+                <span className="text-xl leading-none">{emoji}</span>
                 <span className="leading-tight text-center">{label}</span>
               </button>
             );
@@ -73,7 +92,7 @@ export default function ObjetivoForm({ onSubmit }: ObjetivoFormProps) {
 
       {/* Nombre */}
       <div>
-        <label htmlFor="objectiveName" className={labelBase}>
+        <label htmlFor="objectiveName" className={labelBase} style={{ fontSize: '15px', color: '#5C635A' }}>
           Nombre del objetivo
         </label>
         <input
@@ -83,28 +102,31 @@ export default function ObjetivoForm({ onSubmit }: ObjetivoFormProps) {
           onChange={(e) => setObjectiveName(e.target.value)}
           placeholder="Ej: Pie para un departamento"
           required
-          className={inputBase}
+          className={inputClass}
+          style={inputStyle}
+          onFocus={inputFocus as React.FocusEventHandler<HTMLInputElement>}
+          onBlur={inputBlur as React.FocusEventHandler<HTMLInputElement>}
         />
       </div>
 
       {/* Montos — 3 en una fila */}
       <div className="grid grid-cols-3 gap-2">
         <div>
-          <label htmlFor="targetAmount" className="flex items-center gap-0.5 text-xs font-medium text-tinta/60 mb-1">
+          <label htmlFor="targetAmount" className={labelBase} style={{ fontSize: '15px', color: '#5C635A' }}>
             Objetivo
             <InfoTooltip text="¿Cuánto necesitas al final?" />
           </label>
           <CLPInput id="targetAmount" value={targetAmount} onChange={setTargetAmount} placeholder="10.000.000" required />
         </div>
         <div>
-          <label htmlFor="initialAmount" className="flex items-center gap-0.5 text-xs font-medium text-tinta/60 mb-1">
+          <label htmlFor="initialAmount" className={labelBase} style={{ fontSize: '15px', color: '#5C635A' }}>
             Inicial
             <InfoTooltip text="Plata ya ahorrada. Puede ser $0." />
           </label>
           <CLPInput id="initialAmount" value={initialAmount} onChange={setInitialAmount} placeholder="0" />
         </div>
         <div>
-          <label htmlFor="monthlyContribution" className="flex items-center gap-0.5 text-xs font-medium text-tinta/60 mb-1">
+          <label htmlFor="monthlyContribution" className={labelBase} style={{ fontSize: '15px', color: '#5C635A' }}>
             Aporte/mes
             <InfoTooltip text="¿Cuánto depositarás cada mes?" />
           </label>
@@ -115,14 +137,14 @@ export default function ObjetivoForm({ onSubmit }: ObjetivoFormProps) {
       {/* Plazo + Tasa — 2 en una fila */}
       <div className="grid grid-cols-2 gap-2">
         <div>
-          <label className="flex items-center gap-0.5 text-xs font-medium text-tinta/60 mb-1">
+          <label className={labelBase} style={{ fontSize: '15px', color: '#5C635A' }}>
             Plazo
             <InfoTooltip text="¿En cuánto tiempo quieres llegar a tu objetivo?" />
           </label>
           <PlazoInput value={termValue} unit={termUnit} onValueChange={setTermValue} onUnitChange={setTermUnit} />
         </div>
         <div>
-          <label htmlFor="annualRate" className="flex items-center gap-0.5 text-xs font-medium text-tinta/60 mb-1">
+          <label htmlFor="annualRate" className={labelBase} style={{ fontSize: '15px', color: '#5C635A' }}>
             Tasa anual
             <InfoTooltip text="Valor ilustrativo y editable. Ingresa la tasa real del producto." />
           </label>
@@ -134,17 +156,20 @@ export default function ObjetivoForm({ onSubmit }: ObjetivoFormProps) {
               onChange={(e) => setAnnualRate(parseFloat(e.target.value) || 0)}
               step={0.1} min={0} max={100}
               required
-              className="w-full pl-3 pr-8 py-2.5 border-2 border-alerta/60 rounded-xl focus:outline-none focus:border-alerta transition-colors text-tinta bg-alerta-tint text-sm"
+              className="w-full pl-3 pr-8 py-3 focus:outline-none transition-colors text-tinta text-base"
+              style={{ border: '1px solid #F4A82C', borderRadius: '10px', background: '#FDF6E8' }}
+              onFocus={(e) => { (e.currentTarget as HTMLInputElement).style.borderColor = '#F4A82C'; (e.currentTarget as HTMLInputElement).style.outline = '2px solid #F4A82C'; (e.currentTarget as HTMLInputElement).style.outlineOffset = '1px'; }}
+              onBlur={(e) => { (e.currentTarget as HTMLInputElement).style.outline = 'none'; }}
             />
-            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-tinta/40 text-sm pointer-events-none">%</span>
+            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm font-medium pointer-events-none" style={{ color: '#C2841A' }}>%</span>
           </div>
-          <p className="text-[10px] text-mango-oscuro mt-1 leading-tight">⚠ Ilustrativa · editable</p>
+          <p className="text-[11px] mt-1 leading-tight" style={{ color: '#C2841A' }}>⚠ Ilustrativa · editable</p>
         </div>
       </div>
 
       {/* Producto */}
       <div>
-        <label htmlFor="productType" className="flex items-center gap-0.5 text-xs font-medium text-tinta/60 mb-1">
+        <label htmlFor="productType" className={labelBase} style={{ fontSize: '15px', color: '#5C635A' }}>
           Tipo de producto
           <InfoTooltip text="Dónde guardarás tu dinero. Las fichas completas las encuentras abajo." />
         </label>
@@ -152,7 +177,10 @@ export default function ObjetivoForm({ onSubmit }: ObjetivoFormProps) {
           id="productType"
           value={productType}
           onChange={(e) => handleProductChange(e.target.value as ProductType)}
-          className="w-full px-3 py-2.5 border-2 border-gray-100 rounded-xl focus:outline-none focus:border-verde transition-colors text-tinta bg-white cursor-pointer text-sm"
+          className="w-full px-3 py-3 focus:outline-none transition-colors text-tinta bg-white cursor-pointer text-base"
+          style={inputStyle}
+          onFocus={inputFocus as React.FocusEventHandler<HTMLSelectElement>}
+          onBlur={inputBlur as React.FocusEventHandler<HTMLSelectElement>}
         >
           {PRODUCTS.map((p) => (
             <option key={p.id} value={p.id}>{p.name}</option>
@@ -165,7 +193,7 @@ export default function ObjetivoForm({ onSubmit }: ObjetivoFormProps) {
 
       {/* Error */}
       {error && (
-        <p className="text-xs text-riesgo bg-red-50 border border-red-100 rounded-xl px-3 py-2">
+        <p className="text-xs text-riesgo rounded-xl px-3 py-2" style={{ background: '#FEE8E7', border: '1px solid rgba(232,85,78,0.2)' }}>
           {error}
         </p>
       )}
@@ -173,7 +201,7 @@ export default function ObjetivoForm({ onSubmit }: ObjetivoFormProps) {
       {/* CTA */}
       <button
         type="submit"
-        className="w-full py-3 rounded-xl font-semibold text-sm text-white cursor-pointer transition-colors"
+        className="w-full py-3.5 rounded-xl font-semibold text-base text-white cursor-pointer transition-colors"
         style={{ background: '#F46A1F' }}
         onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = '#C25A12'; }}
         onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = '#F46A1F'; }}
