@@ -38,33 +38,42 @@ export default function ResultHeader({ formData, result }: ResultHeaderProps) {
     }
   }, [result.reachesGoal, result.finalAmount, reduced]);
 
-  const pillSuccess = 'bg-verde-tint text-verde-oscuro';
-  const pillWarn    = 'bg-alerta-tint text-alerta';
-
   return (
     <div className="mb-2">
-      {/* Pill + texto en una línea */}
+      {/* Pill + texto */}
       <div className="flex items-center gap-2.5 flex-wrap mb-3">
-        <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${result.reachesGoal ? pillSuccess : pillWarn}`}>
-          {result.reachesGoal ? '✓ Meta alcanzada' : 'Te falta'}
+        <span
+          className="text-xs font-semibold px-2.5 py-1 rounded-full inline-flex items-center gap-1"
+          style={
+            result.reachesGoal
+              ? { background: '#E3F7EF', color: '#0B7A56' }
+              : { background: '#FDEBCF', color: '#8A5A0C' }
+          }
+        >
+          {result.reachesGoal ? '✓ Meta alcanzada' : (
+            <>
+              ↑ Te falta
+            </>
+          )}
         </span>
-        <p className="text-sm text-tinta leading-snug">
+        <p className="text-sm leading-snug" style={{ color: '#16241D' }}>
           {result.reachesGoal
             ? `Llegas a "${formData.objectiveName}" en ${termLabel(formData)} · te sobran ${formatCLP(result.surplus)}`
             : `"${formData.objectiveName}" · te faltan ${formatCLP(result.gap)}`}
         </p>
       </div>
 
-      {/* Barra de progreso */}
-      <div className="h-1.5 rounded-full overflow-hidden" style={{ background: 'rgba(22,36,29,0.08)' }}>
+      {/* Barra de progreso — anima en los dos casos */}
+      <div className="h-1.5 rounded-full overflow-hidden" style={{ background: '#E3F7EF' }}>
         <motion.div
-          className={`h-full rounded-full ${result.reachesGoal ? 'bg-verde' : 'bg-alerta'}`}
+          className="h-full rounded-full"
+          style={{ background: result.reachesGoal ? '#12B886' : '#F4A82C' }}
           initial={{ width: 0 }}
           animate={{ width: `${completion}%` }}
-          transition={{ duration: reduced ? 0 : 0.8, ease: 'easeOut' }}
+          transition={{ duration: reduced ? 0 : 0.85, ease: [0.25, 0.46, 0.45, 0.94] }}
         />
       </div>
-      <p className="text-xs mt-1 text-right" style={{ color: 'rgba(22,36,29,0.4)' }}>
+      <p className="text-xs mt-1 text-right" style={{ color: '#7A8077' }}>
         {completion.toFixed(0)}% de la meta
       </p>
     </div>

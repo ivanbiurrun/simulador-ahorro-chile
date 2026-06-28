@@ -10,30 +10,32 @@ function Card({
   sub,
   green,
   alert,
-  animate,
 }: {
   label: string;
   value: number;
   sub?: string;
   green?: boolean;
   alert?: boolean;
-  animate?: boolean;
 }) {
   const reduced = useReducedMotion();
-  const valueColor = green ? 'text-verde-oscuro' : alert ? 'text-riesgo' : 'text-tinta';
+  const valueColor = green ? '#0B7A56' : alert ? '#E8554E' : '#16241D';
+  const subColor   = green ? '#0B7A56' : alert ? '#E8554E' : '#7A8077';
 
   return (
-    <div className="bg-white rounded-2xl p-4 shadow-card">
-      <p className="text-xs font-medium mb-1.5 leading-tight" style={{ color: 'rgba(22,36,29,0.45)' }}>
+    <div
+      className="rounded-2xl p-4 shadow-card"
+      style={{ background: green ? '#E3F7EF' : '#FFFFFF' }}
+    >
+      <p className="font-medium mb-1.5 leading-tight" style={{ fontSize: '13px', color: '#7A8077' }}>
         {label}
       </p>
-      <p className={`text-2xl font-bold tabular-nums leading-tight ${valueColor}`}>
-        {animate && !reduced ? (
+      <p className="font-bold tabular-nums leading-tight" style={{ fontSize: '30px', color: valueColor }}>
+        {!reduced ? (
           <CountUp
             key={value}
             start={0}
             end={value}
-            duration={1.2}
+            duration={1.1}
             useEasing
             formattingFn={(n) => formatCLP(Math.round(n))}
           />
@@ -42,7 +44,7 @@ function Card({
         )}
       </p>
       {sub && (
-        <p className="text-xs mt-1" style={{ color: green ? '#0B7A56' : alert ? '#E8554E' : 'rgba(22,36,29,0.45)' }}>
+        <p className="text-xs mt-1" style={{ color: subColor }}>
           {sub}
         </p>
       )}
@@ -67,7 +69,6 @@ export default function MetricCards({ result }: { result: SimulationResult }) {
         value={result.interestEarned}
         sub="Lo que trabajó tu plata"
         green
-        animate
       />
     </div>
   );
