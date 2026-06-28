@@ -35,6 +35,10 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Ocultar scrollbar en carruseles */
+.hide-scrollbar::-webkit-scrollbar { display: none; }
+.hide-scrollbar { scrollbar-width: none; }
+
 /* Quitar flechas en inputs numéricos */
 input[type='number']::-webkit-inner-spin-button,
 input[type='number']::-webkit-outer-spin-button {
