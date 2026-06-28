@@ -9,36 +9,59 @@ interface TipReactivoProps {
   result: SimulationResult;
 }
 
+function isCompleteSentence(text: string): boolean {
+  const trimmed = text.trim();
+  return trimmed.length > 30 && /[.!?]$/.test(trimmed);
+}
+
 function localTip(result: SimulationResult, formData: SimulatorFormData): string {
   const termMonths = toMonths(formData.termValue, formData.termUnit);
-  const clp = formatCLP;
 
   if (result.reachesGoal) {
     if (result.surplus < result.targetAmount * 0.04) {
-      return `Justo llegas. Para tener un colchón, suma un par de meses de aporte — es mejor llegar con margen que exacto.`;
+      return `Justo llegas. Para tener un colchón, sube el aporte o suma un par de meses — es mejor llegar con margen que exacto.`;
     }
-    return `Te sobran ${clp(result.surplus)}. Si no los necesitas para "${formData.objectiveName}", en un fondo mutuo podrían seguir creciendo en vez de quedarse quietos en la cuenta.`;
+    return `Te sobran ${formatCLP(result.surplus)}. Si no los necesitas para "${formData.objectiveName}", moverlos a un fondo mutuo los deja seguir creciendo en vez de quedarse quietos en la cuenta.`;
   }
 
-  const extraNeeded = Math.ceil((result.gap / termMonths) / 1000) * 1000;
-  return `Te faltan ${clp(result.gap)}. Sube el aporte mensual en ~${clp(extraNeeded)} o extiende el plazo unos meses para llegar — ambas palancas se potencian con el interés compuesto.`;
+  const extraMonthlyNeeded = formData.monthlyContribution > 0
+    ? Math.ceil((result.gap / termMonths) / 1000) * 1000
+    : null;
+
+  const extraMonths = formData.monthlyContribution > 0
+    ? Math.ceil(result.gap / formData.monthlyContribution)
+    : null;
+
+  const totalMonths = termMonths + (extraMonths ?? 0);
+  const totalLabel = totalMonths >= 12
+    ? `${Math.round(totalMonths / 12 * 10) / 10} años`
+    : `${totalMonths} meses`;
+
+  if (extraMonthlyNeeded !== null && extraMonths !== null) {
+    return `Te faltan ${formatCLP(result.gap)} para tu meta. Subiendo el aporte en ~${formatCLP(extraMonthlyNeeded)} llegas en el mismo plazo, o estirando a ${totalLabel} sin tocar el aporte. El interés rinde más mientras más tiempo le des.`;
+  }
+
+  return `Te faltan ${formatCLP(result.gap)} para tu meta. Define un aporte mensual y extiende el plazo para llegar — el interés compuesto rinde más mientras más tiempo le des.`;
 }
 
 export default function TipReactivo({ formData, result }: TipReactivoProps) {
-  const [tip, setTip] = useState(() => localTip(result, formData));
+  const [tip, setTip] = useState<string>(() => localTip(result, formData));
   const [fromAI, setFromAI] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setTip(localTip(result, formData));
+    const local = localTip(result, formData);
+    setTip(local);
     setFromAI(false);
     setLoading(true);
 
     const termMonths = toMonths(formData.termValue, formData.termUnit);
+    const controller = new AbortController();
 
     fetch('/api/tips', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
+      signal: controller.signal,
       body: JSON.stringify({
         objectiveName: formData.objectiveName,
         targetAmount: result.targetAmount,
@@ -53,28 +76,36 @@ export default function TipReactivo({ formData, result }: TipReactivoProps) {
     })
       .then((r) => r.json())
       .then((data) => {
-        const aiTip = (data.tips as string).trim();
-        if (aiTip) {
+        const aiTip = typeof data.tips === 'string' ? data.tips.trim() : '';
+        if (aiTip && isCompleteSentence(aiTip) && data.model !== 'fallback') {
           setTip(aiTip);
           setFromAI(true);
         }
       })
-      .catch(() => { /* mantener localTip */ })
+      .catch(() => { /* usar localTip */ })
       .finally(() => setLoading(false));
+
+    return () => controller.abort();
   }, [formData, result]);
 
   return (
     <div className="rounded-2xl p-4 border" style={{ background: '#E7F2FD', borderColor: 'rgba(77,171,247,0.2)' }}>
       <div className="flex items-center justify-between mb-2.5">
         <h3 className="font-semibold text-sm" style={{ color: '#1565A8' }}>💡 Consejo</h3>
-        <span className="text-xs px-2 py-0.5 rounded-full bg-white" style={{ color: '#4DABF7', border: '1px solid rgba(77,171,247,0.3)' }}>
+        <span
+          className="text-xs px-2 py-0.5 rounded-full bg-white"
+          style={{ color: '#4DABF7', border: '1px solid rgba(77,171,247,0.3)' }}
+        >
           {loading ? 'cargando…' : fromAI ? 'IA · educativo' : 'educativo'}
         </span>
       </div>
 
       <p className="text-sm leading-relaxed" style={{ color: '#16241D' }}>{tip}</p>
 
-      <p className="text-[11px] mt-3 pt-2.5" style={{ borderTop: '1px solid rgba(77,171,247,0.15)', color: 'rgba(22,36,29,0.4)' }}>
+      <p
+        className="text-[11px] mt-3 pt-2.5"
+        style={{ borderTop: '1px solid rgba(77,171,247,0.15)', color: 'rgba(22,36,29,0.4)' }}
+      >
         Educativo y general. No es asesoría financiera ni recomendación personal.
       </p>
     </div>
