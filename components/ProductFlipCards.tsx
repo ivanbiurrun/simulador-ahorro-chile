@@ -87,7 +87,7 @@ function FlipCard({ product }: { product: ProductInfo }) {
       <motion.div
         animate={{ rotateY: flipped ? 180 : 0 }}
         transition={{ duration: reduced ? 0 : 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
-        style={{ transformStyle: 'preserve-3d', position: 'relative', minHeight: 320 }}
+        style={{ transformStyle: 'preserve-3d', position: 'relative', minHeight: 360 }}
       >
         {/* Frente */}
         <div

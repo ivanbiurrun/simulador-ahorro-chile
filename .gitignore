@@ -39,3 +39,10 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# archivos internos de trabajo
+INSTRUCTIVO_*.md
+BRIEF*.md
+CORRECCIONES*.md
+CLAUDE.md
+AGENTS.md
