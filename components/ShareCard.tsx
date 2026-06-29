@@ -119,7 +119,7 @@ function CardVisual({ formData, result }: Props) {
 
         {/* Footer */}
         <p style={{ fontSize: '10px', color: 'rgba(22,36,29,0.3)', margin: 0 }}>
-          Simulación educativa · no es asesoría financiera · ahorraconca beza.cl
+          Simulación educativa · no es asesoría financiera
         </p>
 
       </div>
