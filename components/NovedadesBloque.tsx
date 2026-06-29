@@ -1,24 +1,54 @@
 'use client';
 import CarruselShell from './CarruselShell';
 
-const NOTICIAS_PLACEHOLDER = [
+const RECURSOS = [
   {
-    titular: 'Las tasas de depósitos a plazo subieron en el último trimestre',
+    titular: 'Comparador de depósitos a plazo en Chile',
     fuente: 'Rankia Chile',
-    fecha: '2025-06',
-    url: 'https://www.rankia.cl',
+    descripcion: 'Compara tasas actualizadas de depósitos a plazo en los principales bancos.',
+    url: 'https://www.rankia.cl/deposito-a-plazo',
   },
   {
-    titular: 'Cómo elegir un fondo mutuo según tu horizonte de ahorro',
+    titular: 'Compara fondos mutuos de todas las administradoras',
+    fuente: 'Buscafondos',
+    descripcion: 'Busca, compara y filtra fondos mutuos del mercado chileno en un solo lugar.',
+    url: 'https://buscafondos.cl',
+  },
+  {
+    titular: 'Tasas de depósitos a plazo en tiempo real',
+    fuente: 'DepósitoAPlazo.cl',
+    descripcion: 'Ranking actualizado diariamente con las mejores tasas del mercado.',
+    url: 'https://depositoaplazo.cl',
+  },
+  {
+    titular: 'Educación financiera: inversión, ahorro y más',
+    fuente: 'Fintual EDU',
+    descripcion: 'Blog de educación financiera con artículos claros, en español chileno.',
+    url: 'https://edu.fintual.cl',
+  },
+  {
+    titular: 'Todo sobre fondos mutuos en Chile',
     fuente: 'Chócale',
-    fecha: '2025-05',
+    descripcion: 'Guías y comparativas de productos financieros para el inversionista chileno.',
     url: 'https://chocale.cl',
   },
   {
-    titular: 'APV: todo lo que necesitas saber antes de cotizar',
+    titular: 'APV, fondos y ahorro: guía del regulador',
+    fuente: 'CMF Educa',
+    descripcion: 'Educación financiera oficial de la Comisión para el Mercado Financiero.',
+    url: 'https://www.cmfeduca.cl',
+  },
+  {
+    titular: 'Estadísticas e información oficial del sistema financiero',
     fuente: 'CMF Chile',
-    fecha: '2025-04',
+    descripcion: 'Información regulatoria y estadísticas de las instituciones financieras del país.',
     url: 'https://www.cmfchile.cl',
+  },
+  {
+    titular: 'Reclamos y derechos del consumidor financiero',
+    fuente: 'SERNAC',
+    descripcion: 'Conoce tus derechos frente a bancos, seguros y servicios financieros.',
+    url: 'https://www.sernac.cl',
   },
 ];
 
@@ -26,7 +56,7 @@ export default function NovedadesBloque() {
   return (
     <section className="max-w-[1440px] mx-auto px-10 lg:px-12 pb-10">
       <CarruselShell
-        scrollAmount={380}
+        scrollAmount={360}
         title={
           <>
             <h2 className="font-bold text-tinta" style={{ fontSize: '24px' }}>Para seguir aprendiendo</h2>
@@ -36,43 +66,42 @@ export default function NovedadesBloque() {
           </>
         }
       >
-        {NOTICIAS_PLACEHOLDER.map((n) => (
+        {RECURSOS.map((n) => (
           <a
-            key={n.titular}
+            key={n.url}
             href={n.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="bg-white rounded-2xl p-5 flex flex-col gap-3 flex-shrink-0 group transition-shadow hover:shadow-md"
+            className="bg-white rounded-2xl p-5 flex flex-col gap-2.5 flex-shrink-0 group transition-shadow hover:shadow-md"
             style={{
-              width: '360px',
+              width: '300px',
               scrollSnapAlign: 'start',
               border: '1px solid #F0E9DC',
               boxShadow: '0 2px 10px rgba(22,36,29,0.06)',
               textDecoration: 'none',
             }}
           >
-            <div className="flex items-center justify-between gap-2">
-              <span
-                className="text-[11px] font-semibold px-2 py-0.5 rounded-full"
-                style={{ background: '#E3F7EF', color: '#0B7A56' }}
-              >
-                {n.fuente}
-              </span>
-              <span className="text-[11px]" style={{ color: '#7A8077' }}>{n.fecha}</span>
-            </div>
+            <span
+              className="text-[11px] font-semibold px-2 py-0.5 rounded-full self-start"
+              style={{ background: '#E3F7EF', color: '#0B7A56' }}
+            >
+              {n.fuente}
+            </span>
             <p
               className="font-semibold text-sm leading-snug group-hover:text-verde-oscuro transition-colors"
               style={{ color: '#16241D' }}
             >
               {n.titular}
             </p>
+            <p className="text-xs leading-relaxed" style={{ color: '#5C635A' }}>
+              {n.descripcion}
+            </p>
             <p className="text-xs mt-auto" style={{ color: '#7A8077' }}>
-              Leer nota →
+              Visitar →
             </p>
           </a>
         ))}
       </CarruselShell>
-
     </section>
   );
 }
