@@ -31,7 +31,7 @@ export default function NovedadesBloque() {
           <>
             <h2 className="font-bold text-tinta" style={{ fontSize: '24px' }}>Para seguir aprendiendo</h2>
             <p className="text-sm mt-1" style={{ color: '#7A8077' }}>
-              Artículos externos seleccionados. Siempre verifica la fecha y la fuente original.
+              Artículos seleccionados para profundizar.
             </p>
           </>
         }
@@ -73,9 +73,6 @@ export default function NovedadesBloque() {
         ))}
       </CarruselShell>
 
-      <p className="text-xs mt-4" style={{ color: 'rgba(22,36,29,0.35)' }}>
-        * Titulares y fechas son placeholders de ejemplo. Reemplazar con links reales antes de publicar.
-      </p>
     </section>
   );
 }

@@ -58,7 +58,7 @@ export default function EscuchaBloque() {
           <>
             <h2 className="font-bold text-tinta" style={{ fontSize: '24px' }}>Escucha y aprende</h2>
             <p className="text-sm mt-1" style={{ color: '#7A8077' }}>
-              Podcasts y charlas recomendados · verifica links antes de publicar.
+              Podcasts y charlas para aprender sobre finanzas personales.
             </p>
           </>
         }
