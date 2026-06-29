@@ -22,13 +22,18 @@ function termLabel(fd: SimulatorFormData): string {
 
 export default function ResultHeader({ formData, result }: ResultHeaderProps) {
   const reduced = useReducedMotion();
-  const firedRef = useRef<number | null>(null);
+  // Clave compuesta: re-dispara si cambia amount O si cambia el estado (alcanza/no)
+  const fireKey = `${Math.round(result.finalAmount)}-${result.reachesGoal}`;
+  const firedRef = useRef<string | null>(null);
   const completion = Math.min((result.finalAmount / result.targetAmount) * 100, 100);
   const glowAmbar = !result.reachesGoal && !reduced;
 
   useEffect(() => {
-    if (result.reachesGoal && !reduced && firedRef.current !== result.finalAmount) {
-      firedRef.current = result.finalAmount;
+    if (reduced) return;
+    if (firedRef.current === fireKey) return;
+    firedRef.current = fireKey;
+
+    if (result.reachesGoal) {
       confetti({
         particleCount: 80,
         spread: 65,
@@ -36,8 +41,17 @@ export default function ResultHeader({ formData, result }: ResultHeaderProps) {
         colors: ['#12B886', '#FF8A3D', '#4DABF7', '#FBF5EC'],
         disableForReducedMotion: true,
       });
+    } else {
+      // Burst ámbar visible — ánimo, no fracaso
+      confetti({
+        particleCount: 45,
+        spread: 52,
+        origin: { y: 0.3 },
+        colors: ['#F4A82C', '#FF8A3D', '#F46A1F', '#FDEBCF', '#FFF0E3'],
+        disableForReducedMotion: true,
+      });
     }
-  }, [result.reachesGoal, result.finalAmount, reduced]);
+  }, [fireKey, reduced]);
 
   return (
     <div className="mb-2">
