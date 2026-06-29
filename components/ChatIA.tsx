@@ -1,7 +1,7 @@
 'use client';
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageCircle, X, Send } from 'lucide-react';
+import { MessageCircle, X, Send, RotateCcw } from 'lucide-react';
 import { askGemini } from '@/lib/gemini';
 
 const SYSTEM_CONTEXT = `Eres un educador financiero chileno. Respondes preguntas educativas sobre los 4 productos de ahorro e inversión del mercado chileno: cuenta remunerada/vista, depósito a plazo, APV (Ahorro Previsional Voluntario) y fondos mutuos.
@@ -124,14 +124,28 @@ export default function ChatIA() {
                   Pregunta sobre los productos de ahorro
                 </p>
               </div>
-              <button
-                type="button"
-                onClick={() => setOpen(false)}
-                className="text-white/70 hover:text-white transition-colors p-1 rounded-lg"
-                aria-label="Cerrar chat"
-              >
-                <X className="w-4 h-4" />
-              </button>
+              <div className="flex items-center gap-1">
+                {messages.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => { setMessages([]); setInput(''); }}
+                    className="flex items-center gap-1 text-white/80 hover:text-white transition-colors px-2 py-1 rounded-lg text-[11px] font-medium"
+                    aria-label="Volver al inicio"
+                    title="Nueva pregunta"
+                  >
+                    <RotateCcw className="w-3 h-3" />
+                    Inicio
+                  </button>
+                )}
+                <button
+                  type="button"
+                  onClick={() => setOpen(false)}
+                  className="text-white/70 hover:text-white transition-colors p-1 rounded-lg"
+                  aria-label="Cerrar chat"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
             </div>
 
             {/* Mensajes */}
