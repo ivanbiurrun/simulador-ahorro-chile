@@ -20,132 +20,108 @@ interface Props {
   result: SimulationResult;
 }
 
+// Renderizada a 540×540 + pixelRatio:2 = PNG 1080×1080 (óptimo para redes)
 function CardVisual({ formData, result }: Props) {
   const completion = Math.min((result.finalAmount / result.targetAmount) * 100, 100);
 
   return (
     <div
       style={{
-        width: '600px',
-        height: '340px',
-        background: 'linear-gradient(135deg, #E3F7EF 0%, #FBF5EC 60%, #FFF0E3 100%)',
+        width: '540px',
+        height: '540px',
+        background: 'linear-gradient(145deg, #E3F7EF 0%, #FBF5EC 50%, #FFF0E3 100%)',
         fontFamily: "'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif",
-        padding: '36px 40px',
         boxSizing: 'border-box',
         display: 'flex',
         flexDirection: 'column',
-        justifyContent: 'space-between',
         position: 'relative',
         overflow: 'hidden',
       }}
     >
-      {/* Círculo decorativo */}
-      <div
-        style={{
-          position: 'absolute',
-          top: -80,
-          right: -80,
-          width: 260,
-          height: 260,
-          borderRadius: '50%',
-          background: 'rgba(18,184,134,0.08)',
-          pointerEvents: 'none',
-        }}
-      />
+      {/* Franja verde izquierda */}
+      <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '5px', background: '#12B886' }} />
 
-      {/* Header */}
-      <div>
-        <p
-          style={{
-            fontSize: '11px',
-            fontWeight: 700,
-            color: '#0B7A56',
-            marginBottom: '10px',
-            letterSpacing: '0.06em',
-          }}
-        >
+      {/* Círculos decorativos */}
+      <div style={{
+        position: 'absolute', top: -90, right: -90,
+        width: 280, height: 280, borderRadius: '50%',
+        background: 'rgba(18,184,134,0.07)',
+      }} />
+      <div style={{
+        position: 'absolute', bottom: -60, left: 40,
+        width: 180, height: 180, borderRadius: '50%',
+        background: 'rgba(244,168,44,0.06)',
+      }} />
+
+      {/* Contenido */}
+      <div style={{ display: 'flex', flexDirection: 'column', height: '100%', padding: '44px 48px 36px 52px', boxSizing: 'border-box' }}>
+
+        {/* Marca */}
+        <p style={{ fontSize: '12px', fontWeight: 700, color: '#0B7A56', letterSpacing: '0.07em', marginBottom: '20px' }}>
           AHORRA CON CABEZA 🇨🇱
         </p>
-        <h2
-          style={{
-            fontSize: '28px',
-            fontWeight: 700,
-            color: '#16241D',
-            margin: 0,
-            lineHeight: 1.15,
-          }}
-        >
+
+        {/* Objetivo */}
+        <h2 style={{ fontSize: '30px', fontWeight: 700, color: '#16241D', margin: 0, lineHeight: 1.2, marginBottom: '6px', wordBreak: 'break-word' }}>
           {formData.objectiveName}
         </h2>
-        <p style={{ fontSize: '14px', color: '#5C635A', marginTop: '6px' }}>
-          en {termLabel(formData)}
-          {result.reachesGoal ? ' · ✓ Meta alcanzada' : ' · En progreso'}
+        <p style={{ fontSize: '15px', color: '#5C635A', marginBottom: 0 }}>
+          en {termLabel(formData)}{result.reachesGoal ? ' · ✓ Meta alcanzada' : ''}
         </p>
-      </div>
 
-      {/* Cifras */}
-      <div style={{ display: 'flex', gap: '40px', alignItems: 'flex-end' }}>
-        <div>
-          <p style={{ fontSize: '12px', color: '#7A8077', marginBottom: '4px' }}>
+        {/* Separador */}
+        <div style={{ flex: 1 }} />
+
+        {/* Monto final */}
+        <div style={{ marginBottom: '18px' }}>
+          <p style={{ fontSize: '13px', color: '#7A8077', marginBottom: '6px' }}>
             Monto final proyectado
           </p>
-          <p
-            style={{
-              fontSize: '38px',
-              fontWeight: 700,
-              color: '#12B886',
-              margin: 0,
-              lineHeight: 1,
-            }}
-          >
+          <p style={{ fontSize: '46px', fontWeight: 800, color: '#12B886', lineHeight: 1, margin: 0 }}>
             {formatCLP(result.finalAmount)}
           </p>
         </div>
-        <div>
-          <p style={{ fontSize: '12px', color: '#7A8077', marginBottom: '4px' }}>
-            {result.reachesGoal ? 'Te sobran' : 'Te faltan'}
-          </p>
-          <p
-            style={{
-              fontSize: '24px',
-              fontWeight: 700,
-              margin: 0,
-              lineHeight: 1,
-              color: result.reachesGoal ? '#0B7A56' : '#8A5A0C',
-            }}
-          >
-            {formatCLP(result.reachesGoal ? result.surplus : result.gap)}
-          </p>
-        </div>
-      </div>
 
-      {/* Barra de progreso + footer */}
-      <div>
+        {/* Surplus / Gap */}
         <div
           style={{
-            height: '6px',
-            borderRadius: '99px',
-            background: 'rgba(18,184,134,0.18)',
-            marginBottom: '8px',
+            display: 'inline-flex', alignItems: 'center', gap: '8px',
+            background: result.reachesGoal ? 'rgba(18,184,134,0.1)' : 'rgba(244,168,44,0.12)',
+            borderRadius: '12px', padding: '8px 16px', marginBottom: '24px', alignSelf: 'flex-start',
           }}
         >
-          <div
-            style={{
-              height: '100%',
-              borderRadius: '99px',
+          <span style={{ fontSize: '22px', fontWeight: 700, color: result.reachesGoal ? '#0B7A56' : '#8A5A0C' }}>
+            {result.reachesGoal ? '↑' : '↑'}
+          </span>
+          <div>
+            <p style={{ fontSize: '11px', color: '#7A8077', margin: 0 }}>
+              {result.reachesGoal ? 'Te sobran' : 'Te faltan'}
+            </p>
+            <p style={{ fontSize: '20px', fontWeight: 700, margin: 0, color: result.reachesGoal ? '#0B7A56' : '#8A5A0C' }}>
+              {formatCLP(result.reachesGoal ? result.surplus : result.gap)}
+            </p>
+          </div>
+        </div>
+
+        {/* Barra de progreso */}
+        <div style={{ marginBottom: '12px' }}>
+          <div style={{ height: '8px', borderRadius: '99px', background: 'rgba(22,36,29,0.08)', marginBottom: '6px', overflow: 'hidden' }}>
+            <div style={{
+              height: '100%', borderRadius: '99px',
               background: result.reachesGoal ? '#12B886' : '#F4A82C',
               width: `${completion}%`,
-            }}
-          />
-        </div>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <p style={{ fontSize: '11px', color: '#7A8077', margin: 0 }}>
+            }} />
+          </div>
+          <p style={{ fontSize: '12px', color: '#7A8077', margin: 0 }}>
             {completion.toFixed(0)}% de {formatCLP(result.targetAmount)}
           </p>
-          <p style={{ fontSize: '10px', color: 'rgba(22,36,29,0.35)', margin: 0 }}>
-            Simulación educativa · no es asesoría financiera
-          </p>
         </div>
+
+        {/* Footer */}
+        <p style={{ fontSize: '10px', color: 'rgba(22,36,29,0.3)', margin: 0 }}>
+          Simulación educativa · no es asesoría financiera · ahorraconca beza.cl
+        </p>
+
       </div>
     </div>
   );
@@ -159,25 +135,27 @@ export default function ShareCard({ formData, result }: Props) {
     if (!cardRef.current || loading) return;
     setLoading(true);
     try {
+      // pixelRatio:2 sobre 540px = PNG 1080×1080
       const png = await toPng(cardRef.current, { pixelRatio: 2, cacheBust: true });
-      const filename = `ahorra-${formData.objectiveName
+      const slug = formData.objectiveName
         .normalize('NFD')
         .replace(/[̀-ͯ]/g, '')
         .replace(/\s+/g, '-')
-        .toLowerCase()}.png`;
+        .replace(/[^a-z0-9-]/gi, '')
+        .toLowerCase();
+      const filename = `ahorra-${slug}.png`;
 
       if (typeof navigator !== 'undefined' && navigator.share) {
         try {
           const blob = await (await fetch(png)).blob();
           const file = new File([blob], filename, { type: 'image/png' });
           await navigator.share({ title: `Mi proyección: ${formData.objectiveName}`, files: [file] });
+          return;
         } catch {
-          // Si share falla (permisos, etc.) caer a descarga
-          triggerDownload(png, filename);
+          // share rechazado o no soporta files → caer a descarga
         }
-      } else {
-        triggerDownload(png, filename);
       }
+      triggerDownload(png, filename);
     } catch (err) {
       console.error('ShareCard error:', err);
     } finally {
@@ -187,7 +165,7 @@ export default function ShareCard({ formData, result }: Props) {
 
   return (
     <>
-      {/* Tarjeta oculta fuera de pantalla — siempre en el DOM para el ref */}
+      {/* Tarjeta oculta off-screen — siempre en el DOM para que el ref esté listo */}
       <div
         style={{ position: 'fixed', left: '-9999px', top: 0, zIndex: -1, pointerEvents: 'none' }}
         aria-hidden="true"
@@ -197,7 +175,7 @@ export default function ShareCard({ formData, result }: Props) {
         </div>
       </div>
 
-      {/* Botón compartir */}
+      {/* Botón */}
       <button
         type="button"
         onClick={handleShare}
@@ -212,15 +190,9 @@ export default function ShareCard({ formData, result }: Props) {
         }}
       >
         {loading ? (
-          <>
-            <Download className="w-4 h-4" />
-            Generando imagen…
-          </>
+          <><Download className="w-4 h-4" />Generando imagen…</>
         ) : (
-          <>
-            <Share2 className="w-4 h-4" />
-            Compartir mi proyección
-          </>
+          <><Share2 className="w-4 h-4" />Compartir mi proyección</>
         )}
       </button>
     </>
