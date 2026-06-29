@@ -28,24 +28,24 @@ interface Institution {
 
 const TOP3: Record<ProductType, Institution[]> = {
   cuenta_remunerada: [
-    { nombre: 'Mercado Pago Chile', referencia: 'mercadopago.com/cl', url: 'https://www.mercadopago.cl/cuenta' },
-    { nombre: 'MACH',               referencia: 'somosmach.com',      url: 'https://somosmach.com' /* TODO: deep link cuenta */ },
-    { nombre: 'Tu banco actual',     referencia: 'web o app del banco', url: null },
+    { nombre: 'Mercado Pago Chile', referencia: 'mercadopago.cl',  url: 'https://www.mercadopago.cl/cuenta' },
+    { nombre: 'MACH',               referencia: 'machbank.cl',     url: 'https://www.machbank.cl/productos/ahorro-e-inversion/ahorro-24-7' },
+    { nombre: 'Tenpo',              referencia: 'tenpo.cl',        url: 'https://www.tenpo.cl/productos/cuenta-remunerada' },
   ],
   deposito_plazo: [
-    { nombre: 'Rankia Chile',            referencia: 'rankia.cl',         url: 'https://www.rankia.cl/deposito-a-plazo' },
-    { nombre: 'Chócale',                 referencia: 'chocale.cl',        url: 'https://chocale.cl' },
+    { nombre: 'Finclaro',                referencia: 'finclaro.cl',         url: 'https://finclaro.cl/calculadoras/comparador-depositos' },
+    { nombre: 'Tasas.cl',                referencia: 'tasas.cl',            url: 'https://tasas.cl/deposits' },
     { nombre: 'Tu banco de preferencia', referencia: 'web o app del banco', url: null },
   ],
   apv: [
-    { nombre: 'Fintual',     referencia: 'fintual.cl',      url: 'https://fintual.cl/apv' },
-    { nombre: 'Principal',   referencia: 'principal.cl',    url: 'https://www.principal.cl' /* TODO: deep link APV */ },
-    { nombre: 'BancoEstado', referencia: 'bancoestado.cl',  url: 'https://www.bancoestado.cl' /* TODO: deep link APV */ },
+    { nombre: 'Fintual',        referencia: 'fintual.cl',       url: 'https://fintual.cl/apv' },
+    { nombre: 'Prudential',     referencia: 'prudentialagf.cl', url: 'https://prudentialagf.cl/simulador-apv' },
+    { nombre: 'Banco de Chile', referencia: 'bancochile.cl',   url: 'https://sitiospublicos.bancochile.cl/banchileinversiones/ahorro-previsional-voluntario-apv' },
   ],
   fondo_mutuo: [
-    { nombre: 'Fintual',           referencia: 'fintual.cl',      url: 'https://fintual.cl' },
-    { nombre: 'Buscafondos.cl',    referencia: 'buscafondos.cl',  url: 'https://buscafondos.cl' },
-    { nombre: 'Tu administradora', referencia: 'web oficial',     url: null },
+    { nombre: 'Rankia Chile', referencia: 'rankia.cl',      url: 'https://www.rankia.cl/fondos-de-inversion/comparador' },
+    { nombre: 'Patrimore',    referencia: 'patrimore.com',  url: 'https://patrimore.com/herramientas/comparador-fondos-mutuos' },
+    { nombre: 'BuscaFondos',  referencia: 'buscafondos.com', url: 'https://buscafondos.com/comparar' },
   ],
 };
 
