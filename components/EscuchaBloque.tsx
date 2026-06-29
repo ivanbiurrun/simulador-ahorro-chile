@@ -3,12 +3,12 @@ import CarruselShell from './CarruselShell';
 
 const RECURSOS = [
   {
-    nombre: 'Con Peras y Manzanas',
+    nombre: 'Con Peras y Finanzas',
     plataforma: 'Spotify · Chile',
     blurb: 'Francisco Ackermann explica inversión, ahorro y deudas en simple, con un invitado por capítulo.',
     emoji: '🎙️',
     tipo: 'Podcast',
-    href: 'https://open.spotify.com',
+    href: 'https://open.spotify.com/show/2ctcLbQpVuGc2V4ecAnbBC',
     pending: false,
   },
   {
@@ -17,35 +17,35 @@ const RECURSOS = [
     blurb: 'Educación financiera e inversiones: bolsa, bienes raíces, cripto, con consejos prácticos.',
     emoji: '📊',
     tipo: 'Podcast',
-    href: 'https://open.spotify.com',
+    href: 'https://open.spotify.com/show/1Fflo9LU5Bm4mq26FVNc4C',
     pending: false,
   },
   {
     nombre: 'Kapital',
-    plataforma: 'Spotify',
+    plataforma: 'Spotify · Joan Tubau',
     blurb: 'Finanzas y economía con entrevistas largas y profundas. Para ir más a fondo.',
     emoji: '🎧',
     tipo: 'Podcast',
-    href: 'https://open.spotify.com',
+    href: 'https://open.spotify.com/show/4LV2hhtduA5qOUbzf5Ek6C',
     pending: false,
   },
   {
-    nombre: 'TED en español',
-    plataforma: 'TED.com',
-    blurb: 'Charlas sobre finanzas personales y ahorro curadas por Iván. Próximamente.',
-    emoji: '🎯',
+    nombre: 'La batalla entre tu yo presente y tu yo futuro',
+    plataforma: 'TED · Daniel Goldstein',
+    blurb: '¿Por qué nos cuesta ahorrar? Goldstein explica cómo nuestro cerebro sabotea las decisiones de largo plazo.',
+    emoji: '🧠',
     tipo: 'TED',
-    href: '#',
-    pending: true,
+    href: 'https://www.ted.com/talks/daniel_goldstein_the_battle_between_your_present_and_future_self',
+    pending: false,
   },
   {
-    nombre: 'TED en español',
-    plataforma: 'TED.com',
-    blurb: 'Segunda charla seleccionada. Próximamente.',
-    emoji: '💡',
+    nombre: 'Cómo aprendí a leer e invertir en bolsa en prisión',
+    plataforma: 'TED · Curtis Carroll',
+    blurb: 'Una historia poderosa sobre educación financiera y cómo cambiar la mentalidad con la que pensamos en el dinero.',
+    emoji: '📈',
     tipo: 'TED',
-    href: '#',
-    pending: true,
+    href: 'https://www.ted.com/talks/curtis_wall_street_carroll_how_i_learned_to_read_and_trade_stocks_in_prison',
+    pending: false,
   },
 ];
 
@@ -67,8 +67,8 @@ export default function EscuchaBloque() {
           <a
             key={i}
             href={r.href}
-            target={r.pending ? undefined : '_blank'}
-            rel={r.pending ? undefined : 'noopener noreferrer'}
+            target="_blank"
+            rel="noopener noreferrer"
             className="bg-white rounded-2xl p-5 flex flex-col gap-3 flex-shrink-0 group transition-shadow hover:shadow-md"
             style={{
               width: '280px',
@@ -76,10 +76,7 @@ export default function EscuchaBloque() {
               border: '1px solid #F0E9DC',
               boxShadow: '0 2px 10px rgba(22,36,29,0.06)',
               textDecoration: 'none',
-              opacity: r.pending ? 0.6 : 1,
-              pointerEvents: r.pending ? 'none' : undefined,
             }}
-            aria-disabled={r.pending}
           >
             <div className="flex items-start justify-between gap-2">
               <div
@@ -108,11 +105,9 @@ export default function EscuchaBloque() {
                 {r.blurb}
               </p>
             </div>
-            {!r.pending && (
-              <p className="text-xs mt-auto" style={{ color: '#4DABF7' }}>
-                Escuchar →
-              </p>
-            )}
+            <p className="text-xs mt-auto" style={{ color: r.tipo === 'TED' ? '#F4A82C' : '#4DABF7' }}>
+              {r.tipo === 'TED' ? 'Ver charla →' : 'Escuchar →'}
+            </p>
           </a>
         ))}
       </CarruselShell>
