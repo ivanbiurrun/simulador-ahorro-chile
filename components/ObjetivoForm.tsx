@@ -3,7 +3,6 @@ import { useState } from 'react';
 import PlazoInput from './PlazoInput';
 import InfoTooltip from './InfoTooltip';
 import CLPInput from './CLPInput';
-import RatesGuideModal from './RatesGuideModal';
 import { PRODUCTS, getProductById } from '@/lib/products';
 import { CATEGORIES } from '@/lib/categories';
 import type { ProductType, TermUnit, CategoryType, SimulatorFormData } from '@/types';
@@ -187,9 +186,6 @@ export default function ObjetivoForm({ onSubmit }: ObjetivoFormProps) {
           ))}
         </select>
       </div>
-
-      {/* Fuente de tasas */}
-      <RatesGuideModal />
 
       {/* Error */}
       {error && (
