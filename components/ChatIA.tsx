@@ -2,17 +2,22 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MessageCircle, X, Send, RotateCcw } from 'lucide-react';
-import { askGemini } from '@/lib/gemini';
 
-const SYSTEM_CONTEXT = `Eres un educador financiero chileno. Respondes preguntas educativas sobre los 4 productos de ahorro e inversión del mercado chileno: cuenta remunerada/vista, depósito a plazo, APV (Ahorro Previsional Voluntario) y fondos mutuos.
+const CACHE_TTL_MS = 5 * 60 * 1000;
 
-REGLAS ESTRICTAS:
-1. Responder SOLO sobre ahorro, inversión, estos 4 productos y conceptos de finanzas personales en Chile.
-2. NO dar asesoría ni recomendación personal. Si preguntan "¿en qué debería invertir?" o "¿qué me conviene?", aclarar que es educativo y sugerir consultar a un asesor financiero.
-3. Si la pregunta es off-topic, redirigir amablemente: "Puedo ayudarte con dudas sobre cuenta remunerada, depósito a plazo, APV o fondos mutuos."
-4. Respuestas cortas: 2–4 frases. Directo al grano, sin relleno.
-5. Tono simple, en tú, español chileno. Nunca voseo ("vos", "hacés", "podés").
-6. Nunca mencionar tasas específicas ni garantías de retorno.`;
+function readCache(key: string): string | null {
+  try {
+    const raw = localStorage.getItem('chatc_' + key);
+    if (!raw) return null;
+    const { text, ts } = JSON.parse(raw) as { text: string; ts: number };
+    if (Date.now() - ts > CACHE_TTL_MS) { localStorage.removeItem('chatc_' + key); return null; }
+    return text;
+  } catch { return null; }
+}
+
+function writeCache(key: string, text: string): void {
+  try { localStorage.setItem('chatc_' + key, JSON.stringify({ text, ts: Date.now() })); } catch {}
+}
 
 function simpleHash(str: string): string {
   let h = 0;
@@ -57,19 +62,29 @@ export default function ChatIA() {
     setMessages((m) => [...m, { role: 'user', text: q }]);
     setLoading(true);
 
-    const prompt = `${SYSTEM_CONTEXT}\n\nPregunta: ${q}\n\nResponde en 2–4 frases, directo al grano.`;
-    const cacheKey = `chat_${simpleHash(q.toLowerCase().replace(/\s+/g, ' ').trim())}`;
+    const cacheKey = simpleHash(q.toLowerCase().replace(/\s+/g, ' ').trim());
+
+    const cached = readCache(cacheKey);
+    if (cached) {
+      setMessages((m) => [...m, { role: 'ai', text: cached }]);
+      setLoading(false);
+      return;
+    }
 
     try {
-      const { text } = await askGemini(prompt, { cacheKey, maxRetries: 2, timeoutMs: 9000 });
-      setMessages((m) => [...m, { role: 'ai', text }]);
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ question: q }),
+      });
+      const data = await res.json() as { answer?: string; fallback?: boolean };
+      const answer = data.answer ?? 'La IA está con mucha demanda ahora, intenta de nuevo en unos segundos. Mientras tanto, revisa la sección "Conceptos en 1 minuto" más abajo.';
+      if (!data.fallback) writeCache(cacheKey, answer);
+      setMessages((m) => [...m, { role: 'ai', text: answer }]);
     } catch {
       setMessages((m) => [
         ...m,
-        {
-          role: 'ai',
-          text: 'La IA está con mucha demanda ahora, intenta de nuevo en unos segundos. Mientras tanto, revisa la sección "Conceptos en 1 minuto" más abajo.',
-        },
+        { role: 'ai', text: 'La IA está con mucha demanda ahora, intenta de nuevo en unos segundos. Mientras tanto, revisa la sección "Conceptos en 1 minuto" más abajo.' },
       ]);
     } finally {
       setLoading(false);

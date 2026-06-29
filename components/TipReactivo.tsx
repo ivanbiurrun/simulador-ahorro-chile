@@ -1,11 +1,25 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
-import { askGemini } from '@/lib/gemini';
-import { buildTipsPrompt, genericTip } from '@/lib/tips-prompt';
 import { formatCLP } from '@/lib/formatters';
 import { toMonths } from '@/hooks/useSimulador';
 import type { SimulatorFormData, SimulationResult } from '@/types';
+
+const CACHE_TTL_MS = 5 * 60 * 1000;
+
+function readCache(key: string): string | null {
+  try {
+    const raw = localStorage.getItem('tipc_' + key);
+    if (!raw) return null;
+    const { text, ts } = JSON.parse(raw) as { text: string; ts: number };
+    if (Date.now() - ts > CACHE_TTL_MS) { localStorage.removeItem('tipc_' + key); return null; }
+    return text;
+  } catch { return null; }
+}
+
+function writeCache(key: string, text: string): void {
+  try { localStorage.setItem('tipc_' + key, JSON.stringify({ text, ts: Date.now() })); } catch {}
+}
 
 interface TipReactivoProps {
   formData: SimulatorFormData;
@@ -57,28 +71,45 @@ export default function TipReactivo({ formData, result }: TipReactivoProps) {
     setFromAI(false);
     setLoading(true);
 
-    const prompt = buildTipsPrompt(formData, result);
-    // Clave de caché: granularidad por resultado y producto
-    const cacheKey = `tip_${formData.productType}_${result.reachesGoal ? 'ok' : 'nok'}_${Math.round(result.finalAmount / 50000)}`;
-
+    const cacheKey = `${formData.productType}_${result.reachesGoal ? 'ok' : 'nok'}_${Math.round(result.finalAmount / 50000)}`;
+    const termMonths = toMonths(formData.termValue, formData.termUnit);
     let cancelled = false;
 
-    askGemini(prompt, { cacheKey, maxRetries: 2, timeoutMs: 9000 })
-      .then(({ text }) => {
+    const cached = readCache(cacheKey);
+    if (cached) {
+      setTip(cached);
+      setFromAI(true);
+      setLoading(false);
+      return;
+    }
+
+    fetch('/api/tips', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        objectiveName: formData.objectiveName,
+        targetAmount: result.targetAmount,
+        finalAmount: result.finalAmount,
+        productType: formData.productType,
+        annualRate: formData.annualRate,
+        termMonths,
+        reachesGoal: result.reachesGoal,
+        surplus: result.surplus,
+        gap: result.gap,
+      }),
+    })
+      .then((r) => r.json())
+      .then((data: { tips?: string; model?: string }) => {
         if (cancelled) return;
+        const text = data.tips ?? '';
         if (text && isCompleteSentence(text)) {
+          writeCache(cacheKey, text);
           setTip(text);
           setFromAI(true);
-        } else {
-          setTip(genericTip(result));
         }
       })
-      .catch(() => {
-        if (!cancelled) setTip(genericTip(result));
-      })
-      .finally(() => {
-        if (!cancelled) setLoading(false);
-      });
+      .catch(() => { /* mantiene localTip */ })
+      .finally(() => { if (!cancelled) setLoading(false); });
 
     return () => { cancelled = true; };
   }, [formData, result]);
